@@ -3,27 +3,30 @@ package plcc;
 import java.util.*;
 import java.io.*;
 import java.net.*;
-import java.lang.annotation.*;
-import java.lang.reflect.*;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Package;
 
-import plcc.*;
+import plcc.annotation.AnnotationUtils;
 
 public class ClassLoader {
-	public static final ClassLoader instance = new ClassLoader();
+	private static final List<String> classPath = new ArrayList<>();
 
-	private List<String> classPath = new ArrayList<>();
+	static {
+		findClassPath();
+	}
+
 	private List<Class<?>> plccClasses = new ArrayList<>();
 
-	private ClassLoader() {
-		findClassPath();
+	public ClassLoader() {
+//		findClassPath();
 //	DEBUG	for (String path : classPath)
 //	DEBUG		System.out.println(path);
 		for (Package p : Package.getPackages())
-			if (p.getAnnotation(PlccPackage.class) != null)
-				addPlccClasses(p.getName());
+			if (AnnotationUtils.isPlccPackage(p))
+				loadPackageClasses(p.getName());
 	}
 
-	private void findClassPath() { 
+	private static void findClassPath() { 
 		String cp = System.getProperties().get("java.class.path").toString();
 		String[] classpath = cp.split(":");
 		for (String path : classpath) {
@@ -41,11 +44,11 @@ public class ClassLoader {
 
 	private static final String CLASS_FILE_SUFFIX = ".class";
 
-	private void addPlccClasses(String pkgName) { 
-		System.out.println(pkgName);
+	public void loadPackageClasses(String pkgName) { 
+//	DEBUG	System.out.println(pkgName);
 		File path;
-		int i;
-		for (path = new File("klsadjflkjasdkjflk"), i = 0; 
+//	TODO	int i;
+		for (path = new File("klsadjflkjasdkjflk"), int i = 0; 
 			!path.exists() && i < classPath.size(); 
 			path = new File(classPath.get(i++) + DIR_SEPARATOR + pkgName.replace(PKG_SEPARATOR, DIR_SEPARATOR)));
 //	DEBUG	System.out.println(path);
@@ -57,14 +60,14 @@ public class ClassLoader {
 			String filename = file.getName();
 			String fullname = pkgName + PKG_SEPARATOR + filename;
 			if (file.isDirectory()) 
-				addPlccClasses(fullname);
+				loadPackageClasses(fullname);
 			else if (filename.endsWith(CLASS_FILE_SUFFIX))
 				try {
 					Class<?> cls = Class.forName(fullname.substring(0, fullname.lastIndexOf(".")));
 					ANNOTATION_LOOP: for (Annotation a : cls.getDeclaredAnnotations())
-						if (a.annotationType().getAnnotation(PlccClass.class) != null) {
+						if (AnnotationUtils.isPlccAnnotation(a)) {
 							plccClasses.add(cls);
-							break ANNOTATION_LOOP;
+							break ANNOTATION_LOOP; // only needs 1 Plcc annotation to be saved
 						}
 				} catch (ClassNotFoundException e) {}
 		}

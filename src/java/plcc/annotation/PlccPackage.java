@@ -1,9 +1,9 @@
-package plcc;
+package plcc.annotation;
 
 //Creating annotation  
 import java.lang.annotation.*;  
 import java.lang.reflect.*; 
 
-@Target(ElementType.ANNOTATION_TYPE)
+@Target(ElementType.PACKAGE)
 @Retention(RetentionPolicy.RUNTIME)
-@interface PlccClass {}
+public @interface PlccPackage {}

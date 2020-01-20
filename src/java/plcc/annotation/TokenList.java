@@ -1,10 +1,10 @@
-package plcc;
+package plcc.annotation;
 
 //Creating annotation
 import java.lang.annotation.*;
 import java.lang.reflect.*;
 
-import plcc.*;
+import plcc.annotation.PlccClass;
 
 @PlccClass
 @Target(ElementType.TYPE)
