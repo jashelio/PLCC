@@ -6,8 +6,11 @@ import plcc.*;
 public class NumList {
 	private Numbers nums;
 
-	@RunBeforeInit // optional run before constructor
-	public static void setup() {}
+	@RunBeforeInitOnce // optional run before constructor
+	public static void setupOnce() {}
+
+	@RunBeforeInitAll // optional run before constructor
+	public static void setupAll() {}
 
 	// the constructor parameters are the values collected from 
 	// 	the grammar rule
