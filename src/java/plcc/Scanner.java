@@ -19,6 +19,8 @@ class Scanner {
 
 	private java.util.Scanner sc;
 
+	private LineNumberReader lineReader;
+
 	private Map<String, Field> tokens;
 	private Set<String> skips; // I don't think Field is neccessary?
 
@@ -29,17 +31,29 @@ class Scanner {
 
 	Scanner(InputStream input) {
 		this();
-		sc = new java.util.Scanner(input);
+		InputStreamReader reader = new InputStreamReader(input);
+		lineReader = new LineNumberReader(reader);
+		sc = new java.util.Scanner(lineReader);
+	}
+
+	Scanner(Reader input) {
+		this();
+		lineReader = new LineNumberReader(input);
+		sc = new java.util.Scanner(lineReader);
 	}
 
 	Scanner(File input) {
 		this();
-		sc = new java.util.Scanner(input);
+		FileReader reader = new FileReader(input);
+		lineReader = new LineNumberReader(reader);
+		sc = new java.util.Scanner(lineReader);
 	}
 
 	Scanner(String input) {
 		this();
-		sc = new java.util.Scanner(input);
+		StringReader reader = new StringReader(input);
+		lineReader = new LineNumberReader(reader);
+		sc = new java.util.Scanner(lineReader);
 	}
 
 	private boolean hasNext(Set<String> patterns) {
@@ -54,7 +68,7 @@ class Scanner {
 	}
 
 	boolean hasSkip() {
-		return hasNext(skips.keySet());
+		return hasNext(skips);
 	}
 
 	Token nextToken() {
@@ -77,5 +91,9 @@ class Scanner {
 				continue;
 			sc.skip(pattern);
 		}
+	}
+
+	int getLineNumber() {
+		return lineReader.getLineNumber();
 	}
 }
