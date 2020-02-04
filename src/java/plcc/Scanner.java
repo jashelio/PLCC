@@ -1,99 +1,27 @@
-package plcc.Scanner;
+package plcc;
 
-import java.io.*;
-import java.util.*;
-import java.lang.reflect.*;
+import java.util.List;
 
 import plcc.*;
 
-class Scanner {
-	static class Token {
-		public final String value;
-		public final Field type;
+public interface Scanner {
+	boolean hasNextToken(Token token);
 
-		Token(Field type, String value) {
-			this.type = type;
-			this.value = value;
-		}
-	}
+	boolean hasSkip();
 
-	private java.util.Scanner sc;
-
-	private LineNumberReader lineReader;
-
-	private Map<String, Field> tokens;
-	private Set<String> skips; // I don't think Field is neccessary?
-
-	private Scanner() {
-		tokens = PLCC.getTokens();
-		skips = PLCC.getSkips();
-	}
-
-	Scanner(InputStream input) {
-		this();
-		InputStreamReader reader = new InputStreamReader(input);
-		lineReader = new LineNumberReader(reader);
-		sc = new java.util.Scanner(lineReader);
-	}
-
-	Scanner(Reader input) {
-		this();
-		lineReader = new LineNumberReader(input);
-		sc = new java.util.Scanner(lineReader);
-	}
-
-	Scanner(File input) {
-		this();
-		FileReader reader = new FileReader(input);
-		lineReader = new LineNumberReader(reader);
-		sc = new java.util.Scanner(lineReader);
-	}
-
-	Scanner(String input) {
-		this();
-		StringReader reader = new StringReader(input);
-		lineReader = new LineNumberReader(reader);
-		sc = new java.util.Scanner(lineReader);
-	}
-
-	private boolean hasNext(Set<String> patterns) {
-		for (String pattern : patterns)
-			if (sc.hasNext(pattern))
-				return true;
-		return false;
-	}
+	Token nextToken(Token token);
 	
-	boolean hasNextToken() {
-		return hasNext(tokens.keySet());
+	default Token nextToken() {
+		List<Token> tokens = Resources.getTokens();
+		for (Token token : tokens)
+			if (hasNextToken(token))
+				return nextToken(token);
+		return null;
 	}
 
-	boolean hasSkip() {
-		return hasNext(skips);
-	}
+	void skip();
 
-	Token nextToken() {
-		String value = null;
-		String pattern;
-		for (pattern : tokens.keySet()) {
-			if (!sc.hasNext(pattern))
-				continue;
-			value = sc.next(pattern);
-			break;
-		}
-		if (value == null)
-			return null;
-		return new Token(tokens.get(pattern), value);
-	}
+// TODO	Token getCurrentToken();
 
-	void skip() {
-		for (String pattern : skips) {
-			if (!sc.hasNext(pattern))
-				continue;
-			sc.skip(pattern);
-		}
-	}
-
-	int getLineNumber() {
-		return lineReader.getLineNumber();
-	}
+	int getLineNumber();
 }

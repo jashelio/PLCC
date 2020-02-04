@@ -9,4 +9,6 @@ import plcc.annoation.PlccClass;
 @PlccClass
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface GrammarRule {}
+public @interface GrammarRule {
+	Object[] rules() default new Object[0];
+}

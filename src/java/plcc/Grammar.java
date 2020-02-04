@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.StringBuilder;
 
 import plcc.Token;
-import plcc.AST;
+import plcc.annotation.GrammarRule;
 
 public abstract class Grammar {
 
-	public abstract AST parse(Scanner sc);
+	public abstract Object parse(Scanner sc);
 
 	private List<Grammar> grammarRules;
 
@@ -25,6 +25,8 @@ public abstract class Grammar {
 							.get(rule)
 							)
 						);
+			} else if (rule instanceof Class<?>) {
+				grammarRules.add(Grammar.rule((Class<?>)rule));
 			} else
 				throw new Error(rule + 
 						" is not a token or " + 
@@ -35,7 +37,7 @@ public abstract class Grammar {
 	public static Grammar or(Object... rules) {
 		return new Grammar(rules) {
 			@Override
-			public AST parse(Scanner sc) {
+			public Object parse(Scanner sc) {
 				StringBuilder sb = new StringBuilder();
 				for (int i = 0; i < grammarRules.size(); ++i) 
 					try {
@@ -53,11 +55,11 @@ public abstract class Grammar {
 	public static Grammar seq(Object... rules) {
 		return new Grammar(rules) {
 			@Override
-			public AST parse(Scanner sc) {
-				List<AST> parsed = new ArrayList<>();
+			public Object parse(Scanner sc) {
+				Object[] parsed = new Object[grammarRules.size()];
 				for (int i = 0; i < grammarRules.size(); ++i)
-					parsed.add(grammarRules.get(i).parse(sc));
-				return new AST(parsed);
+					parsed[i] = grammarRules.get(i).parse(sc);
+				return parsed;
 			}
 		};
 	}
@@ -65,9 +67,14 @@ public abstract class Grammar {
 	private static Grammar token(Token token) {
 		return new Grammar(new Object[0]) {
 			@Override
-			public AST parse(Scanner sc) {
-				Token read = sc.nextToken();
-				if (!token.isSameType(read))
+			public Object parse(Scanner sc) {
+				while (sc.hasSkip())
+					sc.skip();
+				if (!sc.hasNext(token)) {
+					int line = sc.getLineNumber();
+					//Token read = sc.getCurrentToken();
+					// below doesn't let Grammar.or to work
+					Token read = sc.nextToken();
 					throw new Error("Expected token: <" + 
 							token.getType() + 
 							"> ::= " + 
@@ -75,9 +82,33 @@ public abstract class Grammar {
 							" Recieved token: <" + 
 							read.getType() + 
 							"> ::= " + 
-							read.getValue());
-				return new AST(read);
+							read.getValue() +
+							" on line " + line);
+				return sc.nextToken(token);
 			}
 		};
+	}
+
+	public static Grammar rule(Class<?> cls) {
+		GrammarRule annotation = cls.getAnnotation(GrammarRule.class);
+		if (annotation == null)
+			throw new Error(cls.getName() + " is not associated " + 
+					"with a grammar rule");
+		Object[] rules = annotation.rules();
+		Grammar seqRule = Grammar.seq(rules);
+		Class[] types = new Class[rules.length];
+		for (int i = 0; i < types.length; ++i) 
+			if (rules[i] instanceof Class<?>)
+				types[i] = rules[i];
+			else
+				types[i] = rules[i].getClass();
+		Constructor<?> constructor = cls.getConstructor(types);
+		return new Grammar(new Object[0]) {
+			@Override
+			public Object parse(Scanner sc) {
+				Object[] seq = seqRule.parse(sc);
+				return constructor.newInstance(seq);
+			}
+		}
 	}
 }
