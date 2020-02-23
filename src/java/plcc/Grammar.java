@@ -55,7 +55,7 @@ public abstract class Grammar implements Serializable {
 	}
 
 	public String getRuleString() {
-		return "";
+		return null;
 	}
 
 	public void forEachChild(Consumer<Grammar> consumer) {
@@ -189,6 +189,11 @@ public abstract class Grammar implements Serializable {
 			return result;
 		} else {
 			return new Grammar(new Object[0]) {
+				@Override
+				public String getName() {
+					return name;
+				}
+
 				@Override
 				public Object parse(Scanner sc) {
 //					System.out.println(name + " closure");

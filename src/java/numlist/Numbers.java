@@ -51,7 +51,7 @@ public class Numbers implements Iterable<Number> {
 		private Numbers more;
 
 		// token.NUMBER, Numbers grammar rule
-		public NonEmpty(String number, String comma, Numbers nums) throws ParseException {
+		public NonEmpty(String number, Numbers nums) throws ParseException {
 			val = formatter.parse(number); // construct number
 			System.out.println(val);
 			more = nums; // save the rest

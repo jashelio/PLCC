@@ -31,7 +31,8 @@ public class BNFWriter {
 		if (grammar == null)
 			return;
 		String name = grammar.getName();
-		if (name == null) {
+		String ruleString = grammar.getRuleString();
+		if (name == null || ruleString == null) {
 			if (grammar.hasChildren())
 				grammar.forEachChild(this::writeGrammar);
 			return;
@@ -39,7 +40,7 @@ public class BNFWriter {
 		StringBuilder sb = new StringBuilder();
 		sb.append(name)
 		  .append(grammar.isList() ? " **= " : " ::= ")
-		  .append(grammar.getRuleString());
+		  .append(ruleString);
 		writer.println(sb.toString());
 		grammar.forEachChild(this::writeGrammar);
 		writer.flush();
