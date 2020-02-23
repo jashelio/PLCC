@@ -1,6 +1,6 @@
 package numlist;
 
-import plcc.*;
+import plcc.annotation.*;
 
 @TokenList
 public enum TokenEnum { // must be public
@@ -11,7 +11,7 @@ public enum TokenEnum { // must be public
 
 	private String regex;
 
-	Token(String regex) {
+	TokenEnum(String regex) {
 		this.regex = regex;
 	}
 

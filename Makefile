@@ -1,13 +1,17 @@
+JFLAGS :=
+
 ifdef DEBUG
-JFLAGS := -Xdiags:verbose
+JFLAGS += -Xdiags:verbose
 JFLAGS_TEXT := with compile flags $(JFLAGS)
 endif
+
+JFLAGS += -parameters
 
 OUTPUT := bin/java
 INPUT  := src/java
 
-MAIN   := test/Test
-OBJ    := $(OUTPUT)/$(MAIN).class $(OUTPUT)/test/sub/SubTest.class $(OUTPUT)/test/package-info.class $(OUTPUT)/test1/Test1.class $(OUTPUT)/test1/package-info.class
+MAIN   := test/plcc/GrammarTest
+OBJ    := $(OUTPUT)/$(MAIN).class $(OUTPUT)/numlist/package-info.class
 
 build: $(OUTPUT) clean $(OBJ)
 

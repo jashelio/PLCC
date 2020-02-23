@@ -1,76 +1,53 @@
 package plcc;
 
 import java.io.*;
-import java.util.*;
 import java.lang.reflect.*;
+import java.util.regex.*;
+import java.util.Set;
 
 import plcc.*;
 
-class BasicScanner implements Scanner {
+public class BasicScanner implements Scanner {
 	private java.util.Scanner sc;
 
 	private LineNumberReader lineReader;
 
-	private Map<String, Field> tokens;
-	private Set<String> skips; // I don't think Field is neccessary?
-
-	private Token currentToken;
-
-	private BasicScanner() {
-		tokens = PLCC.getTokens();
-		skips = PLCC.getSkips();
+	public BasicScanner(InputStream input) {
+		this(new InputStreamReader(input));
 	}
 
-	BasicScanner(InputStream input) {
-		this();
-		InputStreamReader reader = new InputStreamReader(input);
-		lineReader = new LineNumberReader(reader);
-		sc = new java.util.Scanner(lineReader);
-		currentToken = nextToken();
-	}
-
-	BasicScanner(Reader input) {
-		this();
+	public BasicScanner(Reader input) {
 		lineReader = new LineNumberReader(input);
-		sc = new java.util.Scanner(lineReader);
-		currentToken = nextToken();
+		sc = new java.util.Scanner(lineReader).useDelimiter("");
 	}
 
-	BasicScanner(File input) {
-		this();
-		FileReader reader = new FileReader(input);
-		lineReader = new LineNumberReader(reader);
-		sc = new java.util.Scanner(lineReader);
-		currentToken = nextToken();
+	public BasicScanner(File input) throws FileNotFoundException {
+		this(new FileReader(input));
 	}
 
-	BasicScanner(String input) {
-		this();
-		StringReader reader = new StringReader(input);
-		lineReader = new LineNumberReader(reader);
-		sc = new java.util.Scanner(lineReader);
-		currentToken = nextToken();
+	public BasicScanner(String input) {
+		this(new StringReader(input));
 	}
 
-	private boolean hasNext(Set<String> patterns) {
-		for (String pattern : patterns)
+	private boolean hasNext(Set<Pattern> patterns) {
+		for (Pattern pattern : patterns)
 			if (sc.hasNext(pattern))
 				return true;
 		return false;
 	}
 	
 	@Override
-	boolean hasNextToken(Token token) {
-		return sc.hasNext(token.getRegex());
+	public boolean hasNextToken(Pattern pattern) {
+		return sc.hasNext(pattern);
 	}
 
 	@Override
-	boolean hasSkip() {
-		return hasNext(skips);
+	public boolean hasSkip() {
+		return hasNext(Resources.instance.getSkips());
 	}
 
 	@Override
-	Token nextToken(Token token) {
+	public Token nextToken(Pattern pattern) {
 /*		String value = null;
 		String pattern;
 		for (pattern : tokens.keySet()) {
@@ -83,23 +60,22 @@ class BasicScanner implements Scanner {
 			return null;
 		return new Token(tokens.get(pattern), value);
 		*/
-		return new Token(token, sc.next(token.getRegex()));
+		return new Token(Resources.instance.getToken(pattern), sc.next(pattern));
 	} // Grammar.or(token1, token2).parse(this) may run into 
 	  // not having the first token but having the second token.
 	  // This doesn't currently work due to the Scanner. Should
 	  // I save the current token? How would I know when it is used?
 
 	@Override
-	void skip() {
-		for (String pattern : skips) {
-			if (!sc.hasNext(pattern))
-				continue;
-			sc.skip(pattern);
-		}
+	public void skip() {
+		Resources.instance.forEachSkip( pattern -> {
+			if (sc.hasNext(pattern))
+				sc.skip(pattern);
+		});
 	}
 
 	@Override
-	int getLineNumber() {
+	public int getLineNumber() {
 		return lineReader.getLineNumber();
 	}
 }

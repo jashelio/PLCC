@@ -1,21 +1,23 @@
 package plcc;
 
-import java.util.List;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import plcc.*;
 
 public interface Scanner {
-	boolean hasNextToken(Token token);
+	boolean hasNextToken(Pattern pattern);
 
 	boolean hasSkip();
 
-	Token nextToken(Token token);
+	Token nextToken(Pattern pattern);
 	
 	default Token nextToken() {
-		List<Token> tokens = Resources.getTokens();
-		for (Token token : tokens)
-			if (hasNextToken(token))
-				return nextToken(token);
+		Set<Pattern> tokenPatterns = Resources.getInstance()
+						      .getPatterns();
+		for (Pattern pattern : tokenPatterns)
+			if (hasNextToken(pattern))
+				return nextToken(pattern);
 		return null;
 	}
 

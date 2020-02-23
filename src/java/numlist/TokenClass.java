@@ -1,6 +1,6 @@
 package numlist;
 
-import plcc.*;
+import plcc.annotation.*;
 
 @TokenList
 public class TokenClass { // must be public

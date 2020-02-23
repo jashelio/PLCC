@@ -10,5 +10,4 @@ import java.util.function.Function;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Token {
 	boolean skip() default false;
-	Function<Object, String> getValue() default Object::toString;
 }

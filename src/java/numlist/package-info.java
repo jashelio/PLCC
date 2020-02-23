@@ -1,4 +1,4 @@
 @PlccPackage
 package numlist;
 
-import plcc.*;
+import plcc.annotation.*;
