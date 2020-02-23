@@ -1,2 +1,5 @@
-# PLCC
-Programming Language Concepts Compiler Compiler
+# Build Instructions
+`make`
+
+# Run Instructions
+`make run`
