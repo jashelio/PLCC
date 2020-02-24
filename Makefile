@@ -10,7 +10,7 @@ JFLAGS += -parameters
 OUTPUT := bin/java
 INPUT  := src/java
 
-MAIN   := test/plcc/GrammarTest
+MAIN   := test/plcc/ResourcesTest
 OBJ    := $(OUTPUT)/$(MAIN).class $(OUTPUT)/numlist/package-info.class
 
 build: $(OUTPUT) clean $(OBJ)

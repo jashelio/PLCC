@@ -108,8 +108,6 @@ public abstract class Grammar implements Serializable {
 			@Override
 			public Object parse(Scanner sc) {
 //				System.out.print(name + " token = ");
-				while (sc.hasSkip())
-					sc.skip();
 				if (!sc.hasNextToken(pattern)) {
 //					System.out.println("null");
 					return null;
@@ -139,9 +137,8 @@ public abstract class Grammar implements Serializable {
 		String name = sb.toString();
 
 		if (processing.add(cls)) {
-			Constructor<?>[] ctrs = cls.getConstructors();
 			ArrayList<Object> ruleList = new ArrayList<>();
-			for (Constructor<?> ctr : ctrs) {
+			for (Constructor<?> ctr : cls.getConstructors()) {
 				Object[] rules = ctr.getParameters();
 				Grammar seqRule = Grammar.seq(rules);
 				ruleList.add(seqRule);
@@ -157,6 +154,7 @@ public abstract class Grammar implements Serializable {
 				@Override
 				public Object parse(Scanner sc) {
 //					System.out.println(name + " rule");
+					Constructor<?>[] ctrs = cls.getConstructors();
 					for (int i = 0; i < ctrs.length; ++i) {
 						Grammar rule = grammarRules.get(i);
 						Object[] parsed = (Object[])rule.parse(sc);

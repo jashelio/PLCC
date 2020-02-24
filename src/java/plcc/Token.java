@@ -2,8 +2,9 @@ package plcc;
 
 import java.util.regex.Pattern;
 import java.util.function.Function;
+import java.io.Serializable;
 
-public class Token {
+public class Token implements Serializable {
 
 	private String name;
 	private Pattern regex;

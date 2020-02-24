@@ -8,8 +8,6 @@ import plcc.*;
 public interface Scanner {
 	boolean hasNextToken(Pattern pattern);
 
-	boolean hasSkip();
-
 	Token nextToken(Pattern pattern);
 	
 	default Token nextToken() {
@@ -20,8 +18,6 @@ public interface Scanner {
 				return nextToken(pattern);
 		return null;
 	}
-
-	void skip();
 
 // TODO	Token getCurrentToken();
 

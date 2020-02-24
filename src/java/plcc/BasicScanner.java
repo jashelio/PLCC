@@ -18,7 +18,18 @@ public class BasicScanner implements Scanner {
 
 	public BasicScanner(Reader input) {
 		lineReader = new LineNumberReader(input);
-		sc = new java.util.Scanner(lineReader).useDelimiter("");
+		StringBuilder sb = new StringBuilder("[");
+		Resources.instance.forEachSkip( pattern -> {
+			sb.append("[")
+			  .append(pattern)
+			  .append("]");
+		});
+		sb.append("]+");
+		String delimiter = sb.toString();
+		if (delimiter.length() == 3)
+			delimiter = "";
+		sc = new java.util.Scanner(lineReader)
+			.useDelimiter(delimiter);
 	}
 
 	public BasicScanner(File input) throws FileNotFoundException {
@@ -29,50 +40,18 @@ public class BasicScanner implements Scanner {
 		this(new StringReader(input));
 	}
 
-	private boolean hasNext(Set<Pattern> patterns) {
-		for (Pattern pattern : patterns)
-			if (sc.hasNext(pattern))
-				return true;
-		return false;
-	}
-	
 	@Override
 	public boolean hasNextToken(Pattern pattern) {
 		return sc.hasNext(pattern);
 	}
 
 	@Override
-	public boolean hasSkip() {
-		return hasNext(Resources.instance.getSkips());
-	}
-
-	@Override
 	public Token nextToken(Pattern pattern) {
-/*		String value = null;
-		String pattern;
-		for (pattern : tokens.keySet()) {
-			if (!sc.hasNext(pattern))
-				continue;
-			value = sc.next(pattern);
-			break;
-		}
-		if (value == null)
-			return null;
-		return new Token(tokens.get(pattern), value);
-		*/
 		return new Token(Resources.instance.getToken(pattern), sc.next(pattern));
 	} // Grammar.or(token1, token2).parse(this) may run into 
 	  // not having the first token but having the second token.
 	  // This doesn't currently work due to the Scanner. Should
 	  // I save the current token? How would I know when it is used?
-
-	@Override
-	public void skip() {
-		Resources.instance.forEachSkip( pattern -> {
-			if (sc.hasNext(pattern))
-				sc.skip(pattern);
-		});
-	}
 
 	@Override
 	public int getLineNumber() {

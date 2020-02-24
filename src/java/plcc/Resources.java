@@ -91,16 +91,28 @@ public class Resources implements Serializable {
 					new FileInputStream(file))) {
 			try {
 				Object o = in.readUnshared();
-// TODO	TEMP			if (o instanceof Resources)
+/* TODO	TEMP*/			if (o instanceof Resources)
+					instance.load((Resources) o);
 //					instance = (Resources) o;
 				// TODO add error handling
 			} catch (Exception e) {
 				System.err.println(e.getMessage());
 				e.printStackTrace();
 			}
-		}
+					}
 	}
-	
+
+	private void load(Resources r) {
+		this.tokens = r.tokens;
+		this.skips = r.skips;
+		this.patternMap = r.patternMap;
+		this.nameMap = r.nameMap;
+		this.grammarHead = r.grammarHead;
+		this.classMap = r.classMap;
+		patternMap.keySet().forEach( pattern -> {
+			pattern.matcher("for Java bug").matches();
+		});
+	}
 
 	// Token storage TODO move to own class
 	private HashSet<Token> tokens = new HashSet<>();
@@ -164,7 +176,7 @@ public class Resources implements Serializable {
 	public void forEachSkip(Consumer<Pattern> consumer) {
 		skips.forEach(consumer);
 	}
-	
+
 	public Set<Pattern> getSkips() {
 		return Set.copyOf(skips);
 	}
