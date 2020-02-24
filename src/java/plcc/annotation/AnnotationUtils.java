@@ -6,8 +6,6 @@ import java.lang.reflect.Parameter;
 import plcc.Resources;
 
 public class AnnotationUtils {
-	private static Resources resources = Resources.getInstance();
-
 	public static boolean isPlccPackage(Package p) {
 		return p.getAnnotation(PlccPackage.class) != null;
 	}
@@ -16,6 +14,7 @@ public class AnnotationUtils {
 		return a.annotationType().getAnnotation(PlccClass.class) != null;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static boolean isGrammarRule(Class c) {
 		return c.getAnnotation(GrammarRule.class) != null;
 	}		
@@ -25,6 +24,6 @@ public class AnnotationUtils {
 	}
 
 	public static plcc.Token getToken(Parameter p) {
-		return resources.getToken(p.getName());
+		return Resources.instance.getToken(p.getName());
 	}
 }

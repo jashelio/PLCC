@@ -1,7 +1,7 @@
 JFLAGS :=
 
 ifdef DEBUG
-JFLAGS += -Xdiags:verbose
+JFLAGS += -Xdiags:verbose -Xlint:unchecked
 JFLAGS_TEXT := with compile flags $(JFLAGS)
 endif
 
