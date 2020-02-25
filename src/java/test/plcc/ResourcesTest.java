@@ -27,8 +27,6 @@ public class ResourcesTest {
 		Grammar head = resources.getGrammarHead();
 		BNFWriter writer = new BNFWriter();
 		writer.writeGrammar(head);
-		Scanner sc = new BasicScanner(System.in);
-		System.out.print("Test--> ");
 	}
 
 	private static void saveTest() throws Exception {
