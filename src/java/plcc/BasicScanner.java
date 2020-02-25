@@ -57,4 +57,9 @@ public class BasicScanner implements Scanner {
 	public int getLineNumber() {
 		return lineReader.getLineNumber();
 	}
+
+	@Override
+	public void close() {
+		sc.close();
+	}
 }

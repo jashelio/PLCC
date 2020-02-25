@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 import plcc.*;
 
-public interface Scanner {
+public interface Scanner extends AutoCloseable {
 	boolean hasNextToken(Pattern pattern);
 
 	Token nextToken(Pattern pattern);

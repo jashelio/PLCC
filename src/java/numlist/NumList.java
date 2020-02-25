@@ -33,7 +33,7 @@ public class NumList {
 		return result;
 	}
 
-// TODO	@RunAfterInit // optional run after constructor
+	@SemanticEntryPoint // optional run after constructor
 	public void run() {
 		System.out.println(sum());
 	}

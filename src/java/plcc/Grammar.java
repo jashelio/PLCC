@@ -27,6 +27,8 @@ public abstract class Grammar implements Serializable {
 				if (param.getType().equals(String.class)) {
 					String name = param.getName();
 					rule = Resources.instance.getToken(name);
+					if (rule == null)
+						rule = name;
 				} else
 					rule = param.getType();
 			}
@@ -39,9 +41,14 @@ public abstract class Grammar implements Serializable {
 				grammarRules.add(Grammar.grammarRule((Class<?>)rule));
 			} else
 				throw new Error(rule + 
-						" is not a token or " + 
-						"another piece of grammar");
+						" is not a defined token"); 
 		}
+	}
+
+	// For Lookup 
+	
+	public Class<?> getGrammarClass() {
+		return null;
 	}
 
 	// For BNFWriter
@@ -179,6 +186,11 @@ public abstract class Grammar implements Serializable {
 								child.getName())
 							.append(" | ");
 					return sb.substring(0, sb.length() - 3);
+				}
+
+				@Override
+				public Class<?> getGrammarClass() {
+					return cls;
 				}
 			};
 			if (isHead)
