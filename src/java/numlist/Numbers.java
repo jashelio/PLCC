@@ -10,23 +10,29 @@ import java.util.Iterator;
 public class Numbers implements Iterable<Number> {
 	private Numbers nums;
 	
+	protected Numbers(Numbers nums) {
+		this.nums = nums;
+	}
+
 	public Numbers(NonEmpty nums) { // Numbers.NonEmpty grammar rule
 		this.nums = nums;
 	}
 
 	public Numbers() { // empty grammar rule
-		this.nums = new Numbers(null);
+		this.nums = null;
 	}
 
 	@Override
 	public Iterator<Number> iterator() { // how I chose to distribute values
+		Numbers start = this;
 		return new Iterator<Number>() {
-			private Numbers current = nums;
+			private Numbers current = start;
 			public boolean hasNext() {
-				boolean result = current.value() != null;
+				boolean result = current != null && current.more() != null;
 				return result;
 			}
 			public Number next() {
+				current = current.more();
 				Number result = current.value();
 				current = current.more();
 				return result;
@@ -35,7 +41,7 @@ public class Numbers implements Iterable<Number> {
 	}
 
 	protected Number value() { // default for empty
-		return null;
+		return nums != null ? nums.value() : null;
 	}
 
 	protected Numbers more() { // default for empty
@@ -51,10 +57,10 @@ public class Numbers implements Iterable<Number> {
 		private Numbers more;
 
 		// token.NUMBER, Numbers grammar rule
-		public NonEmpty(String number, Numbers nums) throws ParseException {
+		public NonEmpty(String number, RestNumbers numsContainer) throws ParseException {
 			val = formatter.parse(number); // construct number
-			System.out.println(val);
-			more = nums; // save the rest
+//			System.out.println(val);
+			more = numsContainer.more(); // save the rest
 		}
 
 		@Override
@@ -65,6 +71,17 @@ public class Numbers implements Iterable<Number> {
 		@Override
 		protected Numbers more() {
 			return more;
+		}
+
+		@GrammarRule
+		public static class RestNumbers extends Numbers {
+			public RestNumbers(String comma, Numbers nums) {
+				super(nums);
+			}
+
+			public RestNumbers() {
+				super();
+			}
 		}
 	}
 }

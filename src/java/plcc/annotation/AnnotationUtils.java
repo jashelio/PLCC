@@ -1,6 +1,7 @@
 package plcc.annotation;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -17,8 +18,7 @@ public class AnnotationUtils {
 		return a.annotationType().getAnnotation(PlccClass.class) != null;
 	}
 
-	@SuppressWarnings("unchecked")
-	public static boolean isGrammarRule(Class c) {
+	public static boolean isGrammarRule(Class<?> c) {
 		return c.getAnnotation(GrammarRule.class) != null;
 	}		
 
@@ -30,20 +30,44 @@ public class AnnotationUtils {
 		return Resources.instance.getToken(p.getName());
 	}
 
-	public static Consumer<Object> getSemanticEntryPoint() {
-		Class<?> cls = Resources.instance.getGrammarHead()
-						 .getGrammarClass();
+	public static Consumer<Void> getStaticMethod(Class<?> cls, // TODO add check for multiple methods
+			Class<? extends Annotation> annotation) {
 		for (Method method : cls.getMethods()) {
-			if (method.getAnnotation(SemanticEntryPoint.class) == null)
+			if (method.getAnnotation(annotation) == null)
+				continue;
+			int modifiers = method.getModifiers();
+			if (Modifier.isStatic(modifiers) && Modifier.isPublic(modifiers))
+				return ignore -> {
+					try {
+						method.invoke(null);
+					} catch (Exception e) {
+						System.out.println(e.getMessage());
+						e.printStackTrace();
+					}
+				};
+		}
+		return ignore -> {};
+	}
+
+	public static Consumer<Object> getInstanceMethod(Class<?> cls, // TODO add check for multiple methods
+			Class<? extends Annotation> annotation) {
+		for (Method method : cls.getMethods()) {
+			if (method.getAnnotation(annotation) == null)
 				continue;
 			int modifiers = method.getModifiers();
 			if (!Modifier.isStatic(modifiers) && Modifier.isPublic(modifiers))
 				return object -> {
 					try {
+//						System.out.println("Calling semantic entry point: " +
+//								method.getDeclaringClass().getName() + "." +
+//								method.getName() + "()");
 						method.invoke(object);
-					} catch (Exception e) {}
+					} catch (Exception e) {
+						System.out.println(e.getMessage());
+						e.printStackTrace();
+					}
 				};
 		}
-		return object -> System.out.println("Could not find semantic entry point");
+		return object -> {};
 	}
 }

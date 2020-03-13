@@ -41,9 +41,9 @@ public class Resources implements Serializable {
 			if (file.isDirectory())
 				throw new IOException("Can't write to file: " +
 						fileName + " is directory");
-			else
-				System.err.println("Warning: overwriting " + 
-						"existing file " + fileName);
+//			else
+//				System.err.println("Warning: overwriting " + 
+//						"existing file " + fileName);
 		}
 		try (ObjectOutputStream out = new ObjectOutputStream(
 					new FileOutputStream(file))) {
