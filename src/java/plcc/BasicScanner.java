@@ -18,18 +18,8 @@ public class BasicScanner implements Scanner {
 
 	public BasicScanner(Reader input) {
 		lineReader = new LineNumberReader(input);
-		StringBuilder sb = new StringBuilder("[");
-		Resources.instance.forEachSkip( pattern -> {
-			sb.append("[")
-			  .append(pattern)
-			  .append("]");
-		});
-		sb.append("]+");
-		String delimiter = sb.toString();
-		if (delimiter.length() == 3)
-			delimiter = "";
 		sc = new java.util.Scanner(lineReader)
-			.useDelimiter(delimiter);
+			.useDelimiter((String)null);
 	}
 
 	public BasicScanner(File input) throws FileNotFoundException {
@@ -49,9 +39,30 @@ public class BasicScanner implements Scanner {
 	public Token nextToken(Pattern pattern) {
 		return new Token(Resources.instance.getToken(pattern), sc.next(pattern));
 	} // Grammar.or(token1, token2).parse(this) may run into 
-	  // not having the first token but having the second token.
-	  // This doesn't currently work due to the Scanner. Should
-	  // I save the current token? How would I know when it is used?
+	// not having the first token but having the second token.
+	// This doesn't currently work due to the Scanner. Should
+	// I save the current token? How would I know when it is used?
+
+	@Override
+	public void skip() {
+		System.out.print("skipping...");
+		boolean run = false;
+		do {
+			for (Pattern pat : Resources.instance.getSkips()) {
+				if (sc.hasNext(pat)) {
+					run = true;
+					break;
+				}
+			}
+			if (!run)
+				break;	
+			Resources.instance.forEachSkip( pattern -> {
+				if (sc.hasNext(pattern))
+					sc.next(pattern);
+			});
+		} while (run);
+		System.out.println("done");
+	}
 
 	@Override
 	public int getLineNumber() {

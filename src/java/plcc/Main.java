@@ -4,6 +4,10 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.io.IOException;
+
+import java.util.Set;
+import java.util.stream.Stream;
 
 import plcc.*;
 import plcc.annotation.AnnotationUtils;
@@ -51,8 +55,9 @@ public class Main {
 		if (argParseMap == null)
 			initArgParseMap();
 		int i = 0;
-		for (i = 0; args[i].startsWith("-") && 
-				i < args.length; ++i) {
+		for (i = 0; i < args.length; ++i) {
+			if (!args[i].startsWith("-"))
+				break;
 			String option = args[i].substring(1)
 					       .toLowerCase();
 			i = argParseMap.get(option).apply(args, i);
@@ -70,7 +75,7 @@ public class Main {
 		saveName = name;
 	}
 
-	private static void saveIfSet() throws Exception {
+	private static void saveIfSet() throws IOException {
 		if (save) {
 			if (saveName == null)
 				r.save();
@@ -80,19 +85,55 @@ public class Main {
 	}
 
 	public static void main(String[] args) throws Exception {
+		/*Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				Set<Thread> runningThreads = Thread.getAllStackTraces().keySet();
+				for (Thread th : runningThreads) {
+					if (th != Thread.currentThread() 
+							&& !th.isDaemon()) {
+						System.out.println();
+						System.out.println(th.getName() + " Stack:");
+						Stream.of(Thread.getAllStackTraces().get(th))
+						      .forEach(System.out::println);
+						th.stop();
+						}
+				}
+				Thread.currentThread().stop();
+			}
+		});*/
+		int result = 0;
 		try {
 			r = Resources.instance;
+			Token[] tokens = {
+				new Token("LPAREN", "\\("),
+				new Token("RPAREN", "\\)"),
+				new Token("NUMBER", "\\d+"),
+				new Token("COMMA", ",")
+			};
+			for (Token token : tokens)
+				r.addToken(token);
+			r.addSkip("\\s+");
 			parseArgs(args);
 			saveIfSet();
 			g = r.getGrammarHead();
-			sc = new BasicScanner(System.in);
+			sc = new CustomScanner(System.in);
 			Object AST = g.parse(sc);
-			Consumer<Object> entryPoint = AnnotationUtils.getSemanticEntryPoint();
-			entryPoint.accept(AST);
+			if (AST == null) {
+				System.out.println("Could not parse input");
+				System.exit(-3);
+			}
+		} catch (IOException ioe) {
+			System.out.println("I/O Error: " + ioe.getMessage());
+			ioe.printStackTrace();
+			result = -2;
 		} catch (Exception e) {
+			e.printStackTrace();
+			result = -1;
+		} finally {
 			if (sc != null)
 				sc.close();
-			System.exit(-1);
+			System.exit(result);
 		}
 	}
 }

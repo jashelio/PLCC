@@ -1,3 +1,7 @@
+ifndef ARGS
+ARGS := -s NumList.lang -c numlist.NumList
+endif
+
 JFLAGS :=
 
 ifdef DEBUG
@@ -10,8 +14,8 @@ JFLAGS += -parameters
 OUTPUT := bin/java
 INPUT  := src/java
 
-MAIN   := test/plcc/ResourcesTest
-OBJ    := $(OUTPUT)/$(MAIN).class $(OUTPUT)/numlist/package-info.class
+MAIN   := plcc/Main
+OBJ    := $(OUTPUT)/$(MAIN).class $(OUTPUT)/numlist/NumList.class
 
 build: $(OUTPUT) clean $(OBJ)
 
@@ -30,7 +34,7 @@ $(OUTPUT)/%.class: $(INPUT)/%.java
 .PHONY: clean build run
 
 run: 
-	java -cp $(OUTPUT) $(MAIN)
+	java -cp $(OUTPUT) $(MAIN) $(ARGS)
 
 clean: $(OUTPUT)
 	@echo "Cleaning old binary files" && \

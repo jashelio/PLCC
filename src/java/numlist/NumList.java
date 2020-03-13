@@ -6,11 +6,17 @@ import plcc.annotation.*;
 public class NumList {
 	private Numbers nums;
 
-// TODO	@RunBeforeInitOnce // optional run before constructor
-	public static void setupOnce() {}
+	@RunBeforeFirstInit // optional run before constructor
+	public static void setupOnce() {
+		System.out.print("Insert numbers in the form: ");
+		System.out.println("( num1, num2, ..., numN )");
+		System.out.println("Note: you can add any whitespace you want");
+	}
 
-// TODO	@RunBeforeInitAll // optional run before constructor
-	public static void setupAll() {}
+	@RunBeforeEachInit // optional run before constructor
+	public static void setupAll() {
+		System.out.print("Input? ");
+	}
 
 	// the constructor parameters are the values collected from 
 	// 	the grammar rule
@@ -22,14 +28,17 @@ public class NumList {
 		int result = 0;
 //		for (Number num : nums) // java.lang.Number
 //			result += num.intValue()
-		Numbers current = nums.more();
-		if (current == null)
-			current = new Numbers();
-		Number temp;
-		while ((temp = current.value()) != null) {
+		System.out.print('(');
+		boolean ran = false;
+		for ( Number temp : nums ) {
+			ran = true;
 			result += temp.intValue();
-			current = current.more();
+			System.out.print(temp.intValue());
+			System.out.print(", ");
 		}
+		if (ran)
+			System.out.print("\b\b");
+		System.out.println(')');
 		return result;
 	}
 
