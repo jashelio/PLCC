@@ -19,6 +19,10 @@ OBJ    := $(OUTPUT)/$(MAIN).class $(OUTPUT)/numlist/NumList.class
 
 build: $(OUTPUT) clean $(OBJ)
 
+jar: build
+	@echo "Creating JAR executable" && \
+	jar cfe $(OUTPUT)/laps.jar $(MAIN) -C $(OUTPUT) numlist/ -C $(OUTPUT) plcc/ -C $(INPUT) numlist/
+
 bin: 
 	@echo "Creating bin" && \
 	mkdir bin
