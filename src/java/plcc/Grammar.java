@@ -83,7 +83,7 @@ public abstract class Grammar implements Serializable {
 	private static Grammar seq(Object... rules) {
 		return new Grammar(rules) {
 //			private Object[] parsed = null; // TODO make Stack<Object[]>
-			private Stack<Integer> acceptedRuleIndexes = new Stack<>();
+			private Stack<Integer> lastAcceptedRuleIndex = new Stack<>();
 
 			@Override
 			public Object parse(Scanner sc) throws IOException {
@@ -92,25 +92,25 @@ public abstract class Grammar implements Serializable {
 				for (int i = 0; i < grammarRules.size(); ++i) {
 					parsed[i] = grammarRules.get(i).parse(sc);
 					if (parsed[i] == null) {
+						lastAcceptedRuleIndex.push(i);
 						return null;
 					}
-					acceptedRuleIndexes.push(i);
 				}
+				lastAcceptedRuleIndex.push(grammarRules.size());
 				return parsed;
 			}
 			
 			@Override
 			public void returnTokens(Scanner sc) {
+				if (this == EMPTY)
+					return;
 //	/*DEBUG*/		System.out.println("SEQ returning tokens");
-				Integer i = acceptedRuleIndexes.isEmpty() ?
-					null : acceptedRuleIndexes.pop();
+				Integer i = lastAcceptedRuleIndex.isEmpty() ?
+					null : lastAcceptedRuleIndex.pop();
 				if (i == null)
 					return;
-				for (;!acceptedRuleIndexes.isEmpty(); i = acceptedRuleIndexes.pop()) {
+				for (--i; i >= 0; --i) 
 					grammarRules.get(i).returnTokens(sc);
-					if (i == 0)
-						break;
-				}
 			}
 
 			@Override
