@@ -2,13 +2,25 @@ package plcc;
 
 import java.io.PrintWriter;
 import java.io.PrintStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
 import plcc.Grammar;
 
-public class BNFWriter {
+public class BNFWriter implements AutoCloseable {
 
 	private PrintWriter writer;
+	private boolean isStdout = false;
+
+	public BNFWriter(File file) throws FileNotFoundException {
+		this(new PrintWriter(file));
+	}
+
+	public BNFWriter(String filename) throws FileNotFoundException {
+		this(new PrintWriter(filename));
+	}
 
 	public BNFWriter(PrintWriter writer) {
 		this.writer = writer;
@@ -16,10 +28,12 @@ public class BNFWriter {
 
 	public BNFWriter(PrintStream stream) {
 		this(new PrintWriter(stream));
+		isStdout = stream == System.out;
 	}
 
 	public BNFWriter() {
 		this(System.out);
+		isStdout = true;
 	}
 
 	/**
@@ -44,5 +58,11 @@ public class BNFWriter {
 		writer.println(sb.toString());
 		grammar.forEachChild(this::writeGrammar);
 		writer.flush();
+	}
+
+	@Override
+	public void close() throws IOException {
+		if (!isStdout)
+			writer.close();
 	}
 }

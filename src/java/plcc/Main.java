@@ -2,7 +2,6 @@ package plcc;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.io.IOException;
 
@@ -16,6 +15,7 @@ public class Main {
 	private static Resources r;
 	private static Scanner sc;
 	private static Grammar g;
+	private static BNFWriter bnfWriter = null;
 
 	private static void usage() {}
 
@@ -41,17 +41,27 @@ public class Main {
 			return i;
 		});
 		argParseMap.put("s", (args, i) -> {
-			if (args[i + 1].startsWith("-"))
+			if (i + 1 == args.length || args[i + 1].startsWith("-"))
 				setSave();
 			else
 				setSave(args[++i]);
 			return i;
 		});
+		argParseMap.put("b", (args, i) -> {
+			if (i + 1 == args.length || args[i + 1].startsWith("-"))
+				bnfWriter = new BNFWriter();
+			else
+				bnfWriter = new BNFWriter(args[++i]);
+			return i;
+		});
 	}
 
+	private static interface BiFunction<A,B,R> {
+		R apply(A a, B b) throws Exception;
+	}
 	private static HashMap<String, 
 		BiFunction<String[], Integer, Integer>> argParseMap;
-	private static void parseArgs(String[] args) {
+	private static void parseArgs(String[] args) throws Exception {
 		if (argParseMap == null)
 			initArgParseMap();
 		int i = 0;
@@ -117,6 +127,10 @@ public class Main {
 			parseArgs(args);
 			saveIfSet();
 			g = r.getGrammarHead();
+			if (bnfWriter != null) {
+				bnfWriter.writeGrammar(g);
+				bnfWriter.close();
+			}
 			sc = new CustomScanner(System.in);
 			Object AST = g.parse(sc);
 			if (AST == null) {
