@@ -22,22 +22,15 @@ public class Main {
 	private static void initArgParseMap() {
 		argParseMap = new HashMap<>();
 		argParseMap.put("l", (args, i) -> {
-			try {
+			if (i + 1 == args.length || args[i + 1].startsWith("-"))
+				Resources.load();
+			else
 				Resources.load(args[++i]);
-			} catch (Exception e) {
-				usage();
-				System.exit(1);
-			}
 			return i;
 		});
 		argParseMap.put("c", (args, i) -> {
-			try {
-				r.setGrammarHead(Grammar.grammarRule(
-					Class.forName(args[++i])));
-			} catch (Exception e) {
-				usage();
-				System.exit(2);
-			}
+			r.setGrammarHead(Grammar.grammarRule(
+				Class.forName(args[++i])));
 			return i;
 		});
 		argParseMap.put("s", (args, i) -> {
