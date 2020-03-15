@@ -126,10 +126,8 @@ public class Main {
 			}
 			sc = new CustomScanner(System.in);
 			Object AST = g.parse(sc);
-			if (AST == null) {
+			if (AST == null) 
 				System.out.println("Could not parse input");
-				System.exit(-3);
-			}
 		} catch (IOException ioe) {
 			System.out.println("I/O Error: " + ioe.getMessage());
 			ioe.printStackTrace();

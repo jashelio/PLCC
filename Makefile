@@ -1,5 +1,5 @@
 ifndef ARGS
-ARGS := -s NumList.lang -c numlist.NumList
+ARGS := -b -c numlist.NumList
 endif
 
 JFLAGS :=
