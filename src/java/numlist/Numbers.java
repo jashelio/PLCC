@@ -1,6 +1,6 @@
 package numlist;
 
-import plcc.annotation.*;
+import edu.rit.gec8773.laps.annotation.GrammarRule;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -25,11 +25,10 @@ public class Numbers implements Iterable<Number> {
 	@Override
 	public Iterator<Number> iterator() { // how I chose to distribute values
 		Numbers start = this;
-		return new Iterator<Number>() {
+		return new Iterator<>() {
 			private Numbers current = start;
 			public boolean hasNext() {
-				boolean result = current != null && current.more() != null;
-				return result;
+				return current != null && current.more() != null;
 			}
 			public Number next() {
 				current = current.more();

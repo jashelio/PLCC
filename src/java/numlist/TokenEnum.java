@@ -1,6 +1,7 @@
 package numlist;
 
-import plcc.annotation.*;
+import edu.rit.gec8773.laps.annotation.Token;
+import edu.rit.gec8773.laps.annotation.TokenList;
 
 @TokenList
 public enum TokenEnum { // must be public
@@ -21,7 +22,7 @@ public enum TokenEnum { // must be public
 	}
 
 	// TODO add @TokenRegex to mark method to get regex
-	@TokenRegex		// takes prioity over toString
+//	@TokenRegex		// takes prioity over toString
 	public String regex() { // must be public
 		return regex;
 	}

@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Author: Geoffrey Casper
+Main-Class: edu.rit.gec8773.laps.Main
+

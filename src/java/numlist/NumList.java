@@ -1,6 +1,9 @@
 package numlist;
 
-import plcc.annotation.*;
+import edu.rit.gec8773.laps.annotation.GrammarRule;
+import edu.rit.gec8773.laps.annotation.RunBeforeEachInit;
+import edu.rit.gec8773.laps.annotation.RunBeforeFirstInit;
+import edu.rit.gec8773.laps.annotation.SemanticEntryPoint;
 
 @GrammarRule
 public class NumList {

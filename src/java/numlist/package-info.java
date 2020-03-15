@@ -1,4 +1,4 @@
 @PlccPackage
 package numlist;
 
-import plcc.annotation.*;
+import edu.rit.gec8773.laps.annotation.PlccPackage;

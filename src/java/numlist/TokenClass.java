@@ -1,6 +1,7 @@
 package numlist;
 
-import plcc.annotation.*;
+import edu.rit.gec8773.laps.annotation.Token;
+import edu.rit.gec8773.laps.annotation.TokenList;
 
 @TokenList
 public class TokenClass { // must be public
