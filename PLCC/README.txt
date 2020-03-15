@@ -23,7 +23,7 @@ plccmk.bat [-c] [file]: runs plcc.py on 'file' and compiles all of
                             the resulting Java files in the Java directory.
                         The optional '-c' flag will remove all previous
                             Java files if there were any
-                        The 'file' name defaults to 'grammar'
+                        The 'file' name defaults to 'parser'
 scan.bat:               Runs the Java/Scan program (only scan for tokens)
 parse.bat:              Runs the Java/Parser program (only scan and parse)
 rep.bat:                Runs the Java/Rep program

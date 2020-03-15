@@ -1,7 +1,7 @@
 @ECHO off
 
 IF "%~1"=="" (
-	SET FILES="grammar"
+	SET FILES="parser"
 ) ELSE (
 	SET FILES="%*"
 )

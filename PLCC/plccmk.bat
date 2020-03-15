@@ -7,7 +7,7 @@ IF "%~1"=="-c" (
 )
 
 IF "%~1"=="" (
-	SET FILES="grammar"
+	SET FILES="parser"
 ) ELSE (
 	SET FILES="%*"
 )

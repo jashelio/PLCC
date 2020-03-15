@@ -16,18 +16,18 @@ import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-public abstract class Grammar implements Serializable {
+public abstract class Parser implements Serializable {
 
-	public static final Grammar EMPTY = Grammar.seq();
+	public static final Parser EMPTY = Parser.seq();
 
 	public abstract Object parse(Scanner sc) throws IOException;
 
 	public abstract void returnTokens(Scanner sc);
 
-	protected ArrayList<Grammar> grammarRules;
+	protected ArrayList<Parser> parsingRules;
 
-	private Grammar(Object[] rules) {
-		grammarRules = new ArrayList<>();
+	private Parser(Object[] rules) {
+		parsingRules = new ArrayList<>();
 		for (Object rule : rules) {
 			if (rule instanceof Parameter) {
 				Parameter param = (Parameter)rule;
@@ -39,13 +39,13 @@ public abstract class Grammar implements Serializable {
 				} else
 					rule = param.getType();
 			}
-			if (rule instanceof Grammar) {
-				Grammar grammar = (Grammar) rule;
-				grammarRules.add(grammar);
+			if (rule instanceof Parser) {
+				Parser parser = (Parser) rule;
+				parsingRules.add(parser);
 			} else if (rule instanceof Token) {
-				grammarRules.add(Grammar.token((Token)rule));
+				parsingRules.add(Parser.token((Token)rule));
 			} else if (rule instanceof Class<?>) {
-				grammarRules.add(Grammar.grammarRule((Class<?>)rule));
+				parsingRules.add(Parser.grammarRule((Class<?>)rule));
 			} else
 				throw new Error(rule + 
 						" is not a defined token"); 
@@ -72,33 +72,33 @@ public abstract class Grammar implements Serializable {
 		return null;
 	}
 
-	public void forEachChild(Consumer<Grammar> consumer) {
-		grammarRules.forEach(consumer);
+	public void forEachChild(Consumer<Parser> consumer) {
+		parsingRules.forEach(consumer);
 	}
 
 	public boolean hasChildren() {
-		return !grammarRules.isEmpty();
+		return !parsingRules.isEmpty();
 	}
 
 	// Factory methods
 
-	private static Grammar seq(Object... rules) {
-		return new Grammar(rules) {
+	private static Parser seq(Object... rules) {
+		return new Parser(rules) {
 //			private Object[] parsed = null; // TODO make Stack<Object[]>
 			private Stack<Integer> lastAcceptedRuleIndex = new Stack<>();
 
 			@Override
 			public Object parse(Scanner sc) throws IOException {
 //	/*DEBUG*/		System.out.println("SEQ rule");
-				Object[] parsed = new Object[grammarRules.size()];
-				for (int i = 0; i < grammarRules.size(); ++i) {
-					parsed[i] = grammarRules.get(i).parse(sc);
+				Object[] parsed = new Object[parsingRules.size()];
+				for (int i = 0; i < parsingRules.size(); ++i) {
+					parsed[i] = parsingRules.get(i).parse(sc);
 					if (parsed[i] == null) {
 						lastAcceptedRuleIndex.push(i);
 						return null;
 					}
 				}
-				lastAcceptedRuleIndex.push(grammarRules.size());
+				lastAcceptedRuleIndex.push(parsingRules.size());
 				return parsed;
 			}
 			
@@ -112,15 +112,15 @@ public abstract class Grammar implements Serializable {
 				if (i == null)
 					return;
 				for (--i; i >= 0; --i) 
-					grammarRules.get(i).returnTokens(sc);
+					parsingRules.get(i).returnTokens(sc);
 			}
 
 			@Override
 			public String getRuleString() {
-				if (grammarRules.isEmpty())
+				if (parsingRules.isEmpty())
 					return "e";
 				StringBuilder sb = new StringBuilder();
-				for (Grammar child : grammarRules) 
+				for (Parser child : parsingRules)
 					sb.append(child.getName() == null ? 
 							child.getRuleString() : 
 							child.getName())
@@ -130,14 +130,14 @@ public abstract class Grammar implements Serializable {
 		};
 	}
 
-	private static Grammar token(Token token) {
+	private static Parser token(Token token) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<")
 			.append(token.getName().toUpperCase())
 			.append(">");
 		String name = sb.toString();
 		Pattern pattern = token.getRegex();
-		return new Grammar(new Object[0]) {
+		return new Parser(new Object[0]) {
 //			private Token tok = null; // TODO make Stack<Token>
 			private Stack<Token> tokStack = new Stack<>();
 			// TODO make use of callstack instead
@@ -175,7 +175,7 @@ public abstract class Grammar implements Serializable {
 	}
 
 	private static HashSet<Class<?>> processing = new HashSet<>();
-	public static Grammar grammarRule(Class<?> cls) {
+	public static Parser grammarRule(Class<?> cls) {
 		boolean isHead = processing.size() == 0;
 		if (!AnnotationUtils.isGrammarRule(cls))
 			throw new Error(cls.getName() + " is not associated " + 
@@ -187,7 +187,7 @@ public abstract class Grammar implements Serializable {
 		String name = sb.toString();
 
 		if (processing.add(cls)) {
-			ArrayList<Grammar> ruleList = new ArrayList<>();
+			ArrayList<Parser> ruleList = new ArrayList<>();
 			boolean isAcceptEmpty = false;
 			int i = 0;
 			for (Constructor<?> ctr : cls.getConstructors()) {
@@ -198,13 +198,13 @@ public abstract class Grammar implements Serializable {
 				}
 				if (!isAcceptEmpty)
 					++i;
-				Grammar seqRule = Grammar.seq(rules);
-				for (Grammar rule : ruleList) // TODO make Grammar.equals()
-					if (rule.grammarRules
+				Parser seqRule = Parser.seq(rules);
+				for (Parser rule : ruleList) // TODO make Parser.equals()
+					if (rule.parsingRules
 						.get(0)
 						.getRuleString()
 						.startsWith(
-							seqRule.grammarRules
+							seqRule.parsingRules
 							       .get(0)
 							       .getRuleString()
 							))
@@ -216,7 +216,7 @@ public abstract class Grammar implements Serializable {
 			int emptyIndex = i;
 			boolean acceptEmpty = isAcceptEmpty;
 			if (acceptEmpty)
-				ruleList.add(Grammar.seq());
+				ruleList.add(Parser.seq());
 			int[] ctrToRule = new int[ruleList.size()];
 			for (i = 0; i < ctrToRule.length; ++i) 
 				if (i < emptyIndex)
@@ -227,8 +227,8 @@ public abstract class Grammar implements Serializable {
 					ctrToRule[i] = i - 1;
 			Object[] ruleArray = new Object[ruleList.size()];
 			ruleArray = ruleList.toArray(ruleArray);
-			Grammar result = new Grammar(ruleArray) {
-				private Stack<Grammar> acceptedRulesStack = new Stack<>();
+			Parser result = new Parser(ruleArray) {
+				private Stack<Parser> acceptedRulesStack = new Stack<>();
 				// TODO make use of callstack instead
 				private boolean ranOnce = false;
 
@@ -255,7 +255,7 @@ public abstract class Grammar implements Serializable {
 					for (int i = 0; i < ctrs.length; ++i) {
 						if (acceptEmpty && i == emptyIndex)
 							continue;
-						Grammar rule = grammarRules.get(ctrToRule[i]);
+						Parser rule = parsingRules.get(ctrToRule[i]);
 						Object[] parsed = (Object[])rule.parse(sc);
 						if (parsed == null) {
 							rule.returnTokens(sc);
@@ -295,7 +295,7 @@ public abstract class Grammar implements Serializable {
 				@Override
 				public void returnTokens(Scanner sc) {
 //	/*DEBUG*/			System.out.println(name + " returning tokens");
-					Grammar rule = acceptedRulesStack.empty() ? 
+					Parser rule = acceptedRulesStack.empty() ?
 						null : acceptedRulesStack.pop();
 					if (rule == null)
 						return;
@@ -305,7 +305,7 @@ public abstract class Grammar implements Serializable {
 				@Override
 				public String getRuleString() {
 					StringBuilder sb = new StringBuilder();
-					for (Grammar child : grammarRules) 
+					for (Parser child : parsingRules)
 						sb.append(child.getName() == null ? 
 								child.getRuleString() : 
 								child.getName())
@@ -320,10 +320,10 @@ public abstract class Grammar implements Serializable {
 			};
 			if (isHead)
 				processing.clear();
-			Resources.instance.addGrammar(cls, result);
+			Resources.instance.addParser(cls, result);
 			return result;
 		} else {
-			return new Grammar(new Object[0]) {
+			return new Parser(new Object[0]) {
 				@Override
 				public String getName() {
 					return name;
@@ -331,13 +331,13 @@ public abstract class Grammar implements Serializable {
 
 				@Override
 				public void returnTokens(Scanner sc) {
-					Resources.instance.getGrammar(cls).returnTokens(sc);
+					Resources.instance.getParser(cls).returnTokens(sc);
 				}
 
 				@Override
 				public Object parse(Scanner sc) throws IOException {
 //					System.out.println(name + " closure");
-					return Resources.instance.getGrammar(cls).parse(sc);
+					return Resources.instance.getParser(cls).parse(sc);
 				}
 			};
 		}

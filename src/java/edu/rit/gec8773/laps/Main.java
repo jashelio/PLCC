@@ -6,7 +6,7 @@ import java.util.HashMap;
 public class Main {
 	private static Resources r;
 	private static Scanner sc;
-	private static Grammar g;
+	private static Parser g;
 	private static BNFWriter bnfWriter = null;
 
 	private static void usage() {}
@@ -21,7 +21,7 @@ public class Main {
 			return i;
 		});
 		argParseMap.put("c", (args, i) -> {
-			r.setGrammarHead(Grammar.grammarRule(
+			r.setParserHead(Parser.grammarRule(
 				Class.forName(args[++i])));
 			return i;
 		});
@@ -111,7 +111,7 @@ public class Main {
 			r.addSkip("\\s+");
 			parseArgs(args);
 			saveIfSet();
-			g = r.getGrammarHead();
+			g = r.getParserHead();
 			if (bnfWriter != null) {
 				bnfWriter.writeGrammar(g);
 				bnfWriter.close();

@@ -34,26 +34,26 @@ public class BNFWriter implements AutoCloseable {
 	}
 
 	/**
-	 * Recursively writes grammar rules to the writer starting at the 
-	 * argument grammar. If the grammar rule or the name of the grammar
+	 * Recursively writes parser rules to the writer starting at the
+	 * argument parser. If the parser rule or the name of the parser
 	 * rule is null, this method does nothing.
 	 */
-	public void writeGrammar(Grammar grammar) {
-		if (grammar == null)
+	public void writeGrammar(Parser parser) {
+		if (parser == null)
 			return;
-		String name = grammar.getName();
-		String ruleString = grammar.getRuleString();
+		String name = parser.getName();
+		String ruleString = parser.getRuleString();
 		if (name == null || ruleString == null) {
-			if (grammar.hasChildren())
-				grammar.forEachChild(this::writeGrammar);
+			if (parser.hasChildren())
+				parser.forEachChild(this::writeGrammar);
 			return;
 		}
 		StringBuilder sb = new StringBuilder();
 		sb.append(name)
-		  .append(grammar.isList() ? " **= " : " ::= ")
+		  .append(parser.isList() ? " **= " : " ::= ")
 		  .append(ruleString);
 		writer.println(sb.toString());
-		grammar.forEachChild(this::writeGrammar);
+		parser.forEachChild(this::writeGrammar);
 		writer.flush();
 	}
 

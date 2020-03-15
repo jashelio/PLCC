@@ -80,7 +80,7 @@ public class CustomScanner implements Scanner {
 			return null;
 		Token tokenType = Resources.instance.getToken(pattern);
 		return new Token(tokenType, value);
-	} // Grammar.or(token1, token2).parse(this) may run into 
+	} // Parser.or(token1, token2).parse(this) may run into
 	// not having the first token but having the second token.
 	// This doesn't currently work due to the Scanner. Should
 	// I save the current token? How would I know when it is used?

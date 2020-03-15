@@ -91,7 +91,7 @@ public class Resources implements Serializable {
 		this.skips = r.skips;
 		this.patternMap = r.patternMap;
 		this.nameMap = r.nameMap;
-		this.grammarHead = r.grammarHead;
+		this.parserHead = r.parserHead;
 		this.classMap = r.classMap;
 		patternMap.keySet().forEach( pattern -> pattern.matcher("for Java bug").matches());
 	}
@@ -163,32 +163,32 @@ public class Resources implements Serializable {
 		return Set.copyOf(skips);
 	}
 
-	// Grammar storage TODO move to own class
-	private Grammar grammarHead = Grammar.EMPTY;
-	private HashMap<Class<?>, Grammar> classMap = new HashMap<>();
+	// Parser storage TODO move to own class
+	private Parser parserHead = Parser.EMPTY;
+	private HashMap<Class<?>, Parser> classMap = new HashMap<>();
 
-	public Grammar getGrammar(Class<?> c) {
+	public Parser getParser(Class<?> c) {
 		return classMap.get(c);
 	}
 
-	public boolean hasGrammar(Class<?> c) {
+	public boolean hasParser(Class<?> c) {
 		return classMap.containsKey(c);
 	}
 
-	public boolean addGrammar(Class<?> c, Grammar g) {
-		if (hasGrammar(c))
+	public boolean addParser(Class<?> c, Parser parser) {
+		if (hasParser(c))
 			return false;
-		classMap.put(c, g);
+		classMap.put(c, parser);
 		return true;
 	}
 
-	public Grammar getGrammarHead() {
-		return grammarHead;
+	public Parser getParserHead() {
+		return parserHead;
 	}
 
-	public void setGrammarHead(Grammar grammar) {
-		if (grammar == null)
+	public void setParserHead(Parser parser) {
+		if (parser == null)
 			return;
-		grammarHead = grammar;
+		parserHead = parser;
 	}
 }

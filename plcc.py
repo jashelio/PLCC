@@ -41,7 +41,7 @@ termSpecs = []      # term (token) specifications for generating the Token file
 
 nonterms = set()    # set of all nonterms
 fields = {}         # maps a non-abstract class name to its list of fields
-rules = []          # list of items  of the form (nt, cls, rhs), one for each grammar rule
+rules = []          # list of items  of the form (nt, cls, rhs), one for each parser rule
 extends = {}        # maps a derived class to its abstract base class
 derives = {}        # maps an abstract class to a list of its derived classes
 cases = {}          # maps a non-abstract class to its set of case terminals for use in a switch
@@ -105,7 +105,7 @@ def plccInit():
     STD = STDT + STDP
     STD.append('Token')
     # file-related flags -- can be overwritten
-    # by a grammar file '!flag=...' spec
+    # by a parser file '!flag=...' spec
     # or by a '--flag=...' command line argument
     for fname in STD:
         flags[fname] = fname
@@ -284,7 +284,7 @@ def lexFinishUp():
                 death('Failure copying %s from %s to %s' % (fname, std, dst))
 
 def par(nxt):
-    debug('[par] processing grammar rule lines')
+    debug('[par] processing parser rule lines')
     if not getFlag('parser'):
         done()
     rno = 0
@@ -297,7 +297,7 @@ def par(nxt):
         if line == '':
             continue                    # skip entirely blank lines
         if re.search('_', line):
-            deathLNO('underscore "_" not permitted in grammar rule line')
+            deathLNO('underscore "_" not permitted in parser rule line')
         rno += 1
         processRule(line, rno)
     parFinishUp()
@@ -305,7 +305,7 @@ def par(nxt):
 def parFinishUp():
     global STDP, startSymbol, nonterms, extends, derives, rules
     if not rules:
-        print('No grammar rules', file=sys.stderr)
+        print('No parser rules', file=sys.stderr)
         return
     debug('[parFinishUp] par: finishing up...')
     # check to make sure all RHS nonterms appear as the LHS of at least one rule
@@ -373,7 +373,7 @@ def processRule(line, rno):
         debug('[processRule] rule %3d: %s' % (rno, line))
     tnt = line.split()     # LHS ruleType RHS
     if len(tnt) < 2:
-        deathLNO('illegal grammar rule') # no ruleType
+        deathLNO('illegal parser rule') # no ruleType
     lhs = tnt.pop(0)       # the LHS of this rule
     nt, cls = partitionLHS(lhs)
     base = nt2cls(nt)      # turn the nonterminal name into its (base) class name
@@ -389,7 +389,7 @@ def processRule(line, rno):
         if cls:
             deathLNO('arbno rule cannot specify a non base class name')
         if startSymbol == '':
-            deathLNO('arbno rule cannot be the first grammar rule')
+            deathLNO('arbno rule cannot be the first parser rule')
         if len(rhs) == 0:
             deathLNO('arbno rules cannot be empty')
         debug('[processRule] arbno: ' + line)
@@ -421,7 +421,7 @@ def processRule(line, rno):
             processRule('<%s>:void ::= <%s>' % (ntaux, nt), None)
         return
     elif not ruleType == '::=':
-        deathLNO('illegal grammar rule syntax')
+        deathLNO('illegal parser rule syntax')
     # at this point, we may have a legal non-arbno rule
     debug('[processRule] so far: %s ::= %s' % (lhs, rhs))
     nonterms.update({nt}) # add nt to the set of LHS nonterms
@@ -596,7 +596,7 @@ terms %s appear in first sets for more than one rule starting with nonterm %s
             else:
                 allTerms.update(fst)
         if not allTerms:
-            death('possibly useless or left-recursive grammar rule for nonterm %s' % nt)
+            death('possibly useless or left-recursive parser rule for nonterm %s' % nt)
         cases[nt] = allTerms
     pass
 
@@ -770,7 +770,7 @@ def makeArbnoParse(cls, rhs, sep):
     loopList = []    # the match/parse code in the Arbno loop
     fieldVars = []   # the field variable names (all Lists), to be returned
     fieldSet = set() # the set of field variable names
-    # rhs = rhs[:-1]   # remove the last item from the grammar rule (which has an underscore item)
+    # rhs = rhs[:-1]   # remove the last item from the parser rule (which has an underscore item)
     # create the parse statements to be included in the loop
     switchCases = [] # the token cases in the switch statement
     for item in rhs:
@@ -1073,16 +1073,16 @@ def defangg(item):
             field = None
     # just check for legal values (done once)
     if tnt == None or tnt == '':
-        deathLNO('malformed RHS grammar item %s' % item)
+        deathLNO('malformed RHS parser item %s' % item)
     if not isTerm(tnt) and not isNonterm(tnt):
-        deathLNO('malformed RHS grammar item %s' % item)
+        deathLNO('malformed RHS parser item %s' % item)
     if isTerm(tnt) and not tnt in term:
-        deathLNO('unknown token name in RHS grammar item %s' % item)
+        deathLNO('unknown token name in RHS parser item %s' % item)
     if field == None:
         if not isTerm(tnt):
-            deathLNO('cannot have a bare nonterm in RHS grammar item %s' % item)
+            deathLNO('cannot have a bare nonterm in RHS parser item %s' % item)
     elif not isID(field):
-        deathLNO('field %s is an invalid identifier in RHS grammar item %s' % (field, item))
+        deathLNO('field %s is an invalid identifier in RHS parser item %s' % (field, item))
     return (tnt, field)
 
 def isID(item):
