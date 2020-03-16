@@ -8,25 +8,35 @@ import edu.rit.gec8773.laps.annotation.SemanticEntryPoint;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Stack;
-import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public abstract class Parser implements Serializable {
 
-	public static final Parser EMPTY = Parser.seq();
+	public static final Parser EMPTY;
 
-	public abstract Object parse(Scanner sc) throws IOException;
+	static {
+		Parser temp;
+		try {
+			temp = Parser.seq();
+		} catch (InvocationTargetException e) {
+			temp = null;
+		}
+		EMPTY = temp;
+	}
+
+	public abstract Object parse(Scanner sc) throws IOException, InvocationTargetException;
 
 	public abstract void returnTokens(Scanner sc);
 
 	protected ArrayList<Parser> parsingRules;
 
-	private Parser(Object[] rules) {
+	private Parser(Object[] rules) throws InvocationTargetException {
 		parsingRules = new ArrayList<>();
 		for (Object rule : rules) {
 			if (rule instanceof Parameter) {
@@ -47,8 +57,9 @@ public abstract class Parser implements Serializable {
 			} else if (rule instanceof Class<?>) {
 				parsingRules.add(Parser.grammarRule((Class<?>)rule));
 			} else
-				throw new Error(rule + 
-						" is not a defined token"); 
+				throw new InvocationTargetException(
+						new Exception(rule + 
+						" is not a defined token")); 
 		}
 	}
 
@@ -72,7 +83,7 @@ public abstract class Parser implements Serializable {
 		return null;
 	}
 
-	public void forEachChild(Consumer<Parser> consumer) {
+	public void forEachChild(java.util.function.Consumer<Parser> consumer) {
 		parsingRules.forEach(consumer);
 	}
 
@@ -82,13 +93,13 @@ public abstract class Parser implements Serializable {
 
 	// Factory methods
 
-	private static Parser seq(Object... rules) {
+	private static Parser seq(Object... rules) throws InvocationTargetException {
 		return new Parser(rules) {
 //			private Object[] parsed = null; // TODO make Stack<Object[]>
 			private Stack<Integer> lastAcceptedRuleIndex = new Stack<>();
 
 			@Override
-			public Object parse(Scanner sc) throws IOException {
+			public Object parse(Scanner sc) throws IOException, InvocationTargetException {
 //	/*DEBUG*/		System.out.println("SEQ rule");
 				Object[] parsed = new Object[parsingRules.size()];
 				for (int i = 0; i < parsingRules.size(); ++i) {
@@ -130,7 +141,7 @@ public abstract class Parser implements Serializable {
 		};
 	}
 
-	private static Parser token(Token token) {
+	private static Parser token(Token token) throws InvocationTargetException {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<")
 			.append(token.getName().toUpperCase())
@@ -175,11 +186,16 @@ public abstract class Parser implements Serializable {
 	}
 
 	private static HashSet<Class<?>> processing = new HashSet<>();
-	public static Parser grammarRule(Class<?> cls) {
+	public static Parser grammarRule(Class<?> cls) throws InvocationTargetException {
 		boolean isHead = processing.size() == 0;
 		if (!AnnotationUtils.isGrammarRule(cls))
-			throw new Error(cls.getName() + " is not associated " + 
-					"with a grammar rule");
+			throw new InvocationTargetException(
+						new Exception((cls.getName() + " is not associated " + 
+					"with a grammar rule")));
+
+		TokenCollector tokenCollector = new TokenCollector(cls);
+		tokenCollector.collect();
+
 		StringBuilder sb = new StringBuilder(cls.getName());
 		sb.insert(0, "<")
 			.append(">")
@@ -208,9 +224,10 @@ public abstract class Parser implements Serializable {
 							       .get(0)
 							       .getRuleString()
 							))
-						throw new Error("Two or more grammar" + 
+						throw new InvocationTargetException(
+						new Exception(("Two or more grammar" + 
 								" rules have the same" + 
-								" starting rule in " + cls);
+								" starting rule in " + cls)));
 				ruleList.add(seqRule);
 			}
 			int emptyIndex = i;
@@ -238,10 +255,10 @@ public abstract class Parser implements Serializable {
 				}
 
 				@Override
-				public Object parse(Scanner sc) throws IOException {
+				public Object parse(Scanner sc) throws IOException, InvocationTargetException {
 //	/*DEBUG*/			System.out.println(name + " rule");
 					if (!ranOnce) {
-						Consumer<Void> runOnce = AnnotationUtils.getStaticMethod(cls, 
+						Consumer<Void> runOnce = AnnotationUtils.getStaticMethod(cls,
 								RunBeforeFirstInit.class);
 						runOnce.accept(null);
 						ranOnce = true;
@@ -335,7 +352,7 @@ public abstract class Parser implements Serializable {
 				}
 
 				@Override
-				public Object parse(Scanner sc) throws IOException {
+				public Object parse(Scanner sc) throws IOException, InvocationTargetException {
 //					System.out.println(name + " closure");
 					return Resources.instance.getParser(cls).parse(sc);
 				}

@@ -1,12 +1,17 @@
 package numlist;
 
-import edu.rit.gec8773.laps.annotation.GrammarRule;
-import edu.rit.gec8773.laps.annotation.RunBeforeEachInit;
-import edu.rit.gec8773.laps.annotation.RunBeforeFirstInit;
-import edu.rit.gec8773.laps.annotation.SemanticEntryPoint;
+import edu.rit.gec8773.laps.annotation.*;
 
 @GrammarRule
 public class NumList {
+
+	@Token(skip=true) // must be public
+	public static final String WHITESPACE = "\\s+";
+	@Token // must be public
+	public static final String LPAREN = "\\(";
+	@Token // must be public
+	public static final String RPAREN = "\\)";
+
 	private Numbers nums;
 
 	@RunBeforeFirstInit // optional run before constructor

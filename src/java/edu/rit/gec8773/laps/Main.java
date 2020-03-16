@@ -1,11 +1,16 @@
 package edu.rit.gec8773.laps;
 
+import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.HashMap;
 
 public class Main {
 	private static Resources r;
-	private static Scanner sc;
+	private static CustomScanner sc;
 	private static Parser g;
 	private static BNFWriter bnfWriter = null;
 
@@ -21,8 +26,10 @@ public class Main {
 			return i;
 		});
 		argParseMap.put("c", (args, i) -> {
+			updateClassPath();
+			ClassLoader loader = Thread.currentThread().getContextClassLoader();
 			r.setParserHead(Parser.grammarRule(
-				Class.forName(args[++i])));
+				loader.loadClass(args[++i])));
 			return i;
 		});
 		argParseMap.put("s", (args, i) -> {
@@ -79,7 +86,7 @@ public class Main {
 		}
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws Throwable {
 		/*Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
@@ -100,15 +107,6 @@ public class Main {
 		int result = 0;
 		try {
 			r = Resources.instance;
-			Token[] tokens = {
-				new Token("LPAREN", "\\("),
-				new Token("RPAREN", "\\)"),
-				new Token("NUMBER", "\\d+"),
-				new Token("COMMA", ",")
-			};
-			for (Token token : tokens)
-				r.addToken(token);
-			r.addSkip("\\s+");
 			parseArgs(args);
 			saveIfSet();
 			g = r.getParserHead();
@@ -118,8 +116,15 @@ public class Main {
 			}
 			sc = new CustomScanner(System.in);
 			Object AST = g.parse(sc);
-			if (AST == null) 
-				System.out.println("Could not parse input");
+			if (AST == null) {
+				System.out.print("Could not parse input: \"");
+				System.out.print(sc.getBufferString());
+				System.out.println("\" on line " + sc.getLineNumber());
+			}
+		} catch (InvocationTargetException e) { // for user exceptions
+			result = -3;
+			Throwable t = e.getTargetException();
+			System.err.println(t.getMessage());
 		} catch (IOException ioe) {
 			System.out.println("I/O Error: " + ioe.getMessage());
 			ioe.printStackTrace();
@@ -132,5 +137,18 @@ public class Main {
 				sc.close();
 			System.exit(result);
 		}
+	}
+
+	private static void updateClassPath() {
+		URL url = null;
+		try {
+			url = new File(System.getProperty("user.dir")).toURL();
+		} catch (MalformedURLException e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
+		ClassLoader contextCL = Thread.currentThread().getContextClassLoader();
+		ClassLoader urlCL = URLClassLoader.newInstance(new URL[] { url }, contextCL);
+		Thread.currentThread().setContextClassLoader(urlCL);
 	}
 }

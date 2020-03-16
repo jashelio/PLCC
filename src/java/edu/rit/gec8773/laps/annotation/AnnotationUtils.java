@@ -1,12 +1,9 @@
 package edu.rit.gec8773.laps.annotation;
 
-import edu.rit.gec8773.laps.Resources;
+import edu.rit.gec8773.laps.Consumer;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Parameter;
-import java.util.function.Consumer;
+import java.lang.reflect.*;
 
 public class AnnotationUtils {
 	public static boolean isPlccPackage(Package p) {
@@ -21,16 +18,17 @@ public class AnnotationUtils {
 		return c.getAnnotation(GrammarRule.class) != null;
 	}		
 
-	public static boolean isToken(Parameter p) {
-		return p.getAnnotation(Token.class) != null;
+	public static boolean isToken(AnnotatedElement element) {
+		return element.getAnnotation(Token.class) != null;
 	}
 
-	public static edu.rit.gec8773.laps.Token getToken(Parameter p) {
-		return Resources.instance.getToken(p.getName());
+	public static boolean isSkip(AnnotatedElement element) {
+		Token token = element.getAnnotation(Token.class);
+		return token != null && token.skip();
 	}
 
 	public static Consumer<Void> getStaticMethod(Class<?> cls, // TODO add check for multiple methods
-			Class<? extends Annotation> annotation) {
+												 Class<? extends Annotation> annotation) {
 		for (Method method : cls.getMethods()) {
 			if (method.getAnnotation(annotation) == null)
 				continue;
@@ -39,17 +37,14 @@ public class AnnotationUtils {
 				return ignore -> {
 					try {
 						method.invoke(null);
-					} catch (Exception e) {
-						System.out.println(e.getMessage());
-						e.printStackTrace();
-					}
+					} catch (IllegalAccessException ignored) {}
 				};
 		}
 		return ignore -> {};
 	}
 
 	public static Consumer<Object> getInstanceMethod(Class<?> cls, // TODO add check for multiple methods
-			Class<? extends Annotation> annotation) {
+													 Class<? extends Annotation> annotation) {
 		for (Method method : cls.getMethods()) {
 			if (method.getAnnotation(annotation) == null)
 				continue;
@@ -57,14 +52,8 @@ public class AnnotationUtils {
 			if (!Modifier.isStatic(modifiers) && Modifier.isPublic(modifiers))
 				return object -> {
 					try {
-//						System.out.println("Calling semantic entry point: " +
-//								method.getDeclaringClass().getName() + "." +
-//								method.getName() + "()");
 						method.invoke(object);
-					} catch (Exception e) {
-						System.out.println(e.getMessage());
-						e.printStackTrace();
-					}
+					} catch (IllegalAccessException ignored) {}
 				};
 		}
 		return object -> {};

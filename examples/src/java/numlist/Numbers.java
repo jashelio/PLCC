@@ -1,6 +1,7 @@
 package numlist;
 
 import edu.rit.gec8773.laps.annotation.GrammarRule;
+import edu.rit.gec8773.laps.annotation.Token;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -8,6 +9,12 @@ import java.util.Iterator;
 
 @GrammarRule
 public class Numbers implements Iterable<Number> {
+
+	@Token // must be public
+	public static final String NUMBER = "\\d+";
+	@Token // must be public
+	public static final String COMMA = ",";
+
 	private Numbers nums;
 	
 	protected Numbers(Numbers nums) {

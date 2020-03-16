@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/examples/Example Languages.iml" filepath="$PROJECT_DIR$/examples/Example Languages.iml" />
       <module fileurl="file://$PROJECT_DIR$/src/LAPS.iml" filepath="$PROJECT_DIR$/src/LAPS.iml" />
     </modules>
   </component>

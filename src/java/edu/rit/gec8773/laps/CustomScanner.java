@@ -106,11 +106,15 @@ public class CustomScanner implements Scanner {
 
 	@Override
 	public int getLineNumber() {
-		return lineReader.getLineNumber();
+		return lineReader.getLineNumber() + 1;
 	}
 
 	@Override
 	public void close() throws IOException {
 		lineReader.close();
+	}
+
+	public String getBufferString() {
+		return buffer.toString();
 	}
 }

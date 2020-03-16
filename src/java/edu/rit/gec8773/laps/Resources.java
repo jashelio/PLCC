@@ -7,6 +7,9 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
+import static java.text.DateFormat.*;
+import static java.util.Locale.Category.FORMAT;
+
 public class Resources implements Serializable {
 // TODO	TEMP
 	public static final Resources instance = new Resources();
@@ -19,7 +22,7 @@ public class Resources implements Serializable {
 		return instance;
 	}
 
-	public static final String FILE_EXTENSION = ".resources";
+	public static final String FILE_EXTENSION = ".laps";
 
 	public static void save(String fileName) throws IOException {
 		File file = new File(fileName);
@@ -30,38 +33,54 @@ public class Resources implements Serializable {
 //			else
 //				System.err.println("Warning: overwriting " + 
 //						"existing file " + fileName);
-		}
+		} else
+			file.createNewFile();
 		try (ObjectOutputStream out = new ObjectOutputStream(
 					new FileOutputStream(file))) {
 			out.writeUnshared(instance);
 		}
 	}
 
+	private static DateFormat formatter = DateFormat.getDateTimeInstance(SHORT, LONG, Locale.getDefault(FORMAT));
 	public static void save() throws IOException {
-		DateFormat formatter = DateFormat.getInstance();
-		save(formatter.format(new Date()) + FILE_EXTENSION);
+		String filename = formatter.format(new Date())
+				.replaceAll("[/, ]", "-")
+				.replaceAll(":",".") +
+				FILE_EXTENSION;
+		save(filename);
 	}
 
 	public static void load() throws IOException {
-		DateFormat formatter = DateFormat.getInstance();
 		File dir = new File(".");
 		if (!dir.exists() || !dir.isDirectory())
 			throw new IOException(dir.getAbsolutePath() + " does " +
 					"not exist as a directory");
 		File loadFrom = null;
-		Date newest = new Date(0);
-		for (File file : Objects.requireNonNull(dir.listFiles()))
+		Date newest = null;
+		int newestIndex = -1;
+		newest = new Date(0);
+		File[] files = Objects.requireNonNull(dir.listFiles());
+		for (int i = 0; i < files.length; ++i)
 			try {
-				Date date = formatter.parse(file.getName().
-						substring(0, 
-							file.getName().length() - 
-							FILE_EXTENSION.length()));
-				if (date.after(newest))
+				File file = files[i];
+				String dateString = file.getName()
+						.substring(0,
+								file.getName().length() -
+										FILE_EXTENSION.length())
+						.replaceFirst("-","/")
+						.replaceFirst("-","/")
+						.replaceFirst("-", ",")
+						.replaceAll("-", " ")
+						.replaceAll("\\.", ":");
+				Date date = formatter.parse(dateString);
+				if (date.after(newest)) {
 					newest = date;
+					newestIndex = i;
+				}
 			} catch (ParseException e) { }
-		if (newest.equals(new Date(0)))
+		if (newestIndex == -1)
 			throw new IOException("No resources file found");
-		load(formatter.format(newest) + FILE_EXTENSION);
+		load(files[newestIndex].getAbsolutePath());
 	}
 
 	public static void load(String fileName) throws IOException {
