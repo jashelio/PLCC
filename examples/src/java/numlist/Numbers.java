@@ -81,7 +81,7 @@ public class Numbers implements Iterable<Number> {
 
 		@GrammarRule
 		public static class RestNumbers extends Numbers {
-			public RestNumbers(String comma, Numbers nums) {
+			public RestNumbers(String comma, NonEmpty nums) {
 				super(nums);
 			}
 

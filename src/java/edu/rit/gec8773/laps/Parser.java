@@ -196,7 +196,7 @@ public abstract class Parser implements Serializable {
 		TokenCollector tokenCollector = new TokenCollector(cls);
 		tokenCollector.collect();
 
-		StringBuilder sb = new StringBuilder(cls.getName());
+		StringBuilder sb = new StringBuilder(cls.getSimpleName());
 		sb.insert(0, "<")
 			.append(">")
 			.setCharAt(1, Character.toLowerCase(sb.charAt(1)));

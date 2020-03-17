@@ -106,7 +106,12 @@ public class CustomScanner implements Scanner {
 
 	@Override
 	public int getLineNumber() {
-		return lineReader.getLineNumber() + 1;
+		int result = lineReader.getLineNumber() + 1;
+		for (char c : buffer.toString().toCharArray()) {
+			if (c == '\n')
+				--result;
+		}
+		return result;
 	}
 
 	@Override
