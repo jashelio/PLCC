@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class CustomScanner implements Scanner {
 	private LineNumberReader lineReader;
@@ -120,6 +121,29 @@ public class CustomScanner implements Scanner {
 	}
 
 	public String getBufferString() {
-		return buffer.toString();
+		return buffer.chars()
+				.mapToObj(e -> {
+					switch (e) {
+						case '\n':
+							return "\\n";
+						case '\r':
+							return "\\r";
+						case '\'':
+							return "\\'";
+						case '"':
+							return "\\\"";
+						case '\\':
+							return "\\\\";
+						case '\t':
+							return "\\t";
+						case '\b':
+							return "\\b";
+						case '\f':
+							return "\\f";
+						default:
+							return new String(new char[]{(char) e});
+					}
+				})
+				.collect(Collectors.joining());
 	}
 }
