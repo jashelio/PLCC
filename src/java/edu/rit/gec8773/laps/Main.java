@@ -124,7 +124,16 @@ public class Main {
 		} catch (InvocationTargetException e) { // for user exceptions
 			result = -3;
 			Throwable t = e.getTargetException();
-			System.err.println(t.getMessage());
+			System.err.println("Could not complete execution of the " +
+					"Abstract Syntax Tree's semantics due to the below " +
+					"exception.");
+			t.printStackTrace();
+		} catch (InstantiationException e) { // for user exceptions
+			result = -4;
+			Throwable t = e.getCause();
+			System.err.println("Could not complete construction of the " +
+					"Abstract Syntax Tree due to the below exception.");
+			t.printStackTrace();
 		} catch (IOException ioe) {
 			System.out.println("I/O Error: " + ioe.getMessage());
 			ioe.printStackTrace();

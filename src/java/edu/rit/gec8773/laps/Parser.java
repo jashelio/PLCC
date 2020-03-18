@@ -30,7 +30,7 @@ public abstract class Parser implements Serializable {
 		EMPTY = temp;
 	}
 
-	public abstract Object parse(Scanner sc) throws IOException, InvocationTargetException;
+	public abstract Object parse(Scanner sc) throws IOException, InvocationTargetException, IllegalAccessException, InstantiationException;
 
 	public abstract void returnTokens(Scanner sc);
 
@@ -99,7 +99,7 @@ public abstract class Parser implements Serializable {
 			private Stack<Integer> lastAcceptedRuleIndex = new Stack<>();
 
 			@Override
-			public Object parse(Scanner sc) throws IOException, InvocationTargetException {
+			public Object parse(Scanner sc) throws IOException, InvocationTargetException, InstantiationException, IllegalAccessException {
 //	/*DEBUG*/		System.out.println("SEQ rule");
 				Object[] parsed = new Object[parsingRules.size()];
 				for (int i = 0; i < parsingRules.size(); ++i) {
@@ -156,14 +156,14 @@ public abstract class Parser implements Serializable {
 			@Override
 			public Object parse(Scanner sc) throws IOException {
 				sc.skip();
-//	/*DEBUG*/		System.out.print(name + " token = ");
+				System.out.print(name + " token = ");
 				if (!sc.hasNextToken(pattern)) {
-//	/*DEBUG*/			System.out.println("null");
+					System.out.println("null");
 					return null;
 				}
 				Token tok = sc.nextToken(pattern);
 				String val = tok.getValue();
-//	/*DEBUG*/		System.out.println('"' + val + '"');
+				System.out.println('"' + val + '"');
 				tokStack.push(tok);
 				return tok;
 			}
@@ -198,8 +198,8 @@ public abstract class Parser implements Serializable {
 
 		StringBuilder sb = new StringBuilder(cls.getSimpleName());
 		sb.insert(0, "<")
-			.append(">")
-			.setCharAt(1, Character.toLowerCase(sb.charAt(1)));
+			.append(">");
+//			.setCharAt(1, Character.toLowerCase(sb.charAt(1)));
 		String name = sb.toString();
 
 		if (processing.add(cls)) {
@@ -255,8 +255,8 @@ public abstract class Parser implements Serializable {
 				}
 
 				@Override
-				public Object parse(Scanner sc) throws IOException, InvocationTargetException {
-//	/*DEBUG*/			System.out.println(name + " rule");
+				public Object parse(Scanner sc) throws IOException, InvocationTargetException, IllegalAccessException, InstantiationException {
+					System.out.println(name + " rule");
 					if (!ranOnce) {
 						Consumer<Void> runOnce = AnnotationUtils.getStaticMethod(cls,
 								RunBeforeFirstInit.class);
@@ -284,16 +284,9 @@ public abstract class Parser implements Serializable {
 									((Token)elm).getValue() : 
 									elm )
 							       .toArray();
-						try {
-							Object AST = ctrs[i].newInstance(parsed);
-							runAfter.accept(AST);
-							return AST;
-						} catch (Exception e) {
-							// should never happen
-							// unless exception in USER code TODO
-							System.err.println(e.getMessage());
-							e.printStackTrace();
-						}
+						Object AST = ctrs[i].newInstance(parsed);
+						runAfter.accept(AST);
+						return AST;
 					}
 					if (acceptEmpty) {
 						acceptedRulesStack.push(EMPTY);
@@ -352,7 +345,7 @@ public abstract class Parser implements Serializable {
 				}
 
 				@Override
-				public Object parse(Scanner sc) throws IOException, InvocationTargetException {
+				public Object parse(Scanner sc) throws IOException, InvocationTargetException, InstantiationException, IllegalAccessException {
 //					System.out.println(name + " closure");
 					return Resources.instance.getParser(cls).parse(sc);
 				}
