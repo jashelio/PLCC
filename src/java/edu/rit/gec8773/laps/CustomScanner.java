@@ -1,5 +1,7 @@
 package edu.rit.gec8773.laps;
 
+import edu.rit.gec8773.laps.resources.Resources;
+
 import java.io.*;
 import java.util.Set;
 import java.util.regex.Matcher;

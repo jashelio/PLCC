@@ -1,6 +1,7 @@
 package edu.rit.gec8773.laps;
 
 import edu.rit.gec8773.laps.annotation.AnnotationUtils;
+import edu.rit.gec8773.laps.resources.Resources;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;

@@ -1,5 +1,7 @@
 package edu.rit.gec8773.laps;
 
+import edu.rit.gec8773.laps.resources.Resources;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -44,6 +46,10 @@ public class Main {
 				bnfWriter = new BNFWriter();
 			else
 				bnfWriter = new BNFWriter(args[++i]);
+			return i;
+		});
+		argParseMap.put("d", (args, i) -> {
+			r.enableDebugOutput();
 			return i;
 		});
 	}

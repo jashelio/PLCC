@@ -4,6 +4,7 @@ import edu.rit.gec8773.laps.annotation.AnnotationUtils;
 import edu.rit.gec8773.laps.annotation.RunBeforeEachInit;
 import edu.rit.gec8773.laps.annotation.RunBeforeFirstInit;
 import edu.rit.gec8773.laps.annotation.SemanticEntryPoint;
+import edu.rit.gec8773.laps.resources.Resources;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -156,14 +157,17 @@ public abstract class Parser implements Serializable {
 			@Override
 			public Object parse(Scanner sc) throws IOException {
 				sc.skip();
-				System.out.print(name + " token = ");
+				if (Resources.instance.debugEnabled())
+					System.out.print(name + " token = ");
 				if (!sc.hasNextToken(pattern)) {
-					System.out.println("null");
+					if (Resources.instance.debugEnabled())
+						System.out.println("null");
 					return null;
 				}
 				Token tok = sc.nextToken(pattern);
 				String val = tok.getValue();
-				System.out.println('"' + val + '"');
+				if (Resources.instance.debugEnabled())
+					System.out.println('"' + val + '"');
 				tokStack.push(tok);
 				return tok;
 			}
@@ -199,7 +203,6 @@ public abstract class Parser implements Serializable {
 		StringBuilder sb = new StringBuilder(cls.getSimpleName());
 		sb.insert(0, "<")
 			.append(">");
-//			.setCharAt(1, Character.toLowerCase(sb.charAt(1)));
 		String name = sb.toString();
 
 		if (processing.add(cls)) {
@@ -256,7 +259,8 @@ public abstract class Parser implements Serializable {
 
 				@Override
 				public Object parse(Scanner sc) throws IOException, InvocationTargetException, IllegalAccessException, InstantiationException {
-					System.out.println(name + " rule");
+					if (Resources.instance.debugEnabled())
+						System.out.println(name + " rule");
 					if (!ranOnce) {
 						Consumer<Void> runOnce = AnnotationUtils.getStaticMethod(cls,
 								RunBeforeFirstInit.class);

@@ -1,4 +1,7 @@
-package edu.rit.gec8773.laps;
+package edu.rit.gec8773.laps.resources;
+
+import edu.rit.gec8773.laps.Parser;
+import edu.rit.gec8773.laps.Token;
 
 import java.io.*;
 import java.text.DateFormat;
@@ -106,108 +109,90 @@ public class Resources implements Serializable {
 	}
 
 	private void load(Resources r) {
-		this.tokens = r.tokens;
-		this.skips = r.skips;
-		this.patternMap = r.patternMap;
-		this.nameMap = r.nameMap;
-		this.parserHead = r.parserHead;
-		this.classMap = r.classMap;
-		patternMap.keySet().forEach( pattern -> pattern.matcher("for Java bug").matches());
+		this.tokenStorage = r.tokenStorage;
+		this.parserStorage = r.parserStorage;
+		tokenStorage.forEachToken( token -> token.getRegex().matcher("for Java bug").matches());
 	}
 
-	// Token storage TODO move to own class
-	private HashSet<Token> tokens = new HashSet<>();
-	private HashSet<Pattern> skips = new HashSet<>();
-	private HashMap<Pattern, Token> patternMap = new HashMap<>();
-	private HashMap<String, Token> nameMap = new HashMap<>();
+	private boolean debug = false;
+
+	public boolean debugEnabled() {
+		return debug;
+	}
+
+	public void enableDebugOutput() {
+		this.debug = true;
+	}
+
+	private TokenStorage tokenStorage = new TokenStorage();
 
 	public boolean hasToken(Token token) {
-		return tokens.contains(token);
+		return tokenStorage.hasToken(token);
 	}
 
 	public boolean hasToken(Pattern pattern) {
-		return patternMap.containsKey(pattern);
+		return tokenStorage.hasToken(pattern);
 	}
 
 	public boolean hasToken(String name) {
-		return nameMap.containsKey(name.toUpperCase());
+		return tokenStorage.hasToken(name);
 	}
 
 	public Token getToken(Pattern pattern) {
-		return patternMap.get(pattern);
+		return tokenStorage.getToken(pattern);
 	}
 
 	public Token getToken(String name) {
-		return nameMap.get(name.toUpperCase());
+		return tokenStorage.getToken(name);
 	}
 
 	public Set<Pattern> getPatterns() {
-		return Set.copyOf(patternMap.keySet());
+		return tokenStorage.getPatterns();
 	}
 
 	public boolean addToken(Token token) {
-		if (!tokens.add(token))
-			return false;
-		if (hasToken(token.getRegex())) {
-			tokens.remove(token);
-			return false;
-		}
-		if (hasToken(token.getName())) {
-			tokens.remove(token);
-			return false;
-		}
-
-		nameMap.put(token.getName().toUpperCase(), token);
-		patternMap.put(token.getRegex(), token);
-		return true;
+		return tokenStorage.addToken(token);
 	}
 
 	public void forEachToken(Consumer<Token> consumer) {
-		tokens.forEach(consumer);
+		tokenStorage.forEachToken(consumer);
 	}
 
 	public boolean addSkip(Pattern pattern) {
-		return skips.add(pattern);
+		return tokenStorage.addSkip(pattern);
 	}
 
 	public boolean addSkip(String pattern) {
-		return addSkip(Pattern.compile(pattern));
+		return tokenStorage.addSkip(pattern);
 	}
 
 	public void forEachSkip(Consumer<Pattern> consumer) {
-		skips.forEach(consumer);
+		tokenStorage.forEachSkip(consumer);
 	}
 
 	public Set<Pattern> getSkips() {
-		return Set.copyOf(skips);
+		return tokenStorage.getSkips();
 	}
 
-	// Parser storage TODO move to own class
-	private Parser parserHead = Parser.EMPTY;
-	private HashMap<Class<?>, Parser> classMap = new HashMap<>();
+	private ParserStorage parserStorage = new ParserStorage();
 
 	public Parser getParser(Class<?> c) {
-		return classMap.get(c);
+		return parserStorage.getParser(c);
 	}
 
 	public boolean hasParser(Class<?> c) {
-		return classMap.containsKey(c);
+		return parserStorage.hasParser(c);
 	}
 
 	public boolean addParser(Class<?> c, Parser parser) {
-		if (hasParser(c))
-			return false;
-		classMap.put(c, parser);
-		return true;
+		return parserStorage.addParser(c, parser);
 	}
 
 	public Parser getParserHead() {
-		return parserHead;
+		return parserStorage.getParserHead();
 	}
 
 	public void setParserHead(Parser parser) {
-		if (parser == null)
-			return;
-		parserHead = parser;
+		parserStorage.setParserHead(parser);
 	}
 }
