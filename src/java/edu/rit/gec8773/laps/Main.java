@@ -11,6 +11,7 @@ import java.net.URLClassLoader;
 import java.util.HashMap;
 
 public class Main {
+	private static final Integer COMMAND_LINE_ARGS_FAIL = -5;
 	private static Resources r;
 	private static CustomScanner sc;
 	private static Parser g;
@@ -28,6 +29,9 @@ public class Main {
 			return i;
 		});
 		argParseMap.put("c", (args, i) -> {
+			if (i + 1 == args.length || args[i + 1].startsWith("-")) {
+				return COMMAND_LINE_ARGS_FAIL;
+			}
 			updateClassPath();
 			ClassLoader loader = Thread.currentThread().getContextClassLoader();
 			r.setParserHead(Parser.grammarRule(
@@ -64,8 +68,10 @@ public class Main {
 			initArgParseMap();
 		int i;
 		for (i = 0; i < args.length; ++i) {
-			if (!args[i].startsWith("-"))
-				break;
+			if (i < 0 || !args[i].startsWith("-")) {
+				usage();
+				System.exit(-5);
+			}
 			String option = args[i].substring(1)
 					       .toLowerCase();
 			i = argParseMap.get(option).apply(args, i);
