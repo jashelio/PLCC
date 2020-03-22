@@ -42,10 +42,10 @@ public class BNFWriter implements AutoCloseable {
 		if (parser == null)
 			return;
 		String name = parser.getName();
-		String ruleString = parser.getRuleString();
+		String ruleString = parser.toString();
 		if (name == null || ruleString == null) {
 			if (parser.hasChildren())
-				parser.forEachChild(this::writeGrammar);
+				parser.forEach(this::writeGrammar);
 			return;
 		}
 		StringBuilder sb = new StringBuilder();
@@ -53,7 +53,7 @@ public class BNFWriter implements AutoCloseable {
 		  .append(parser.isList() ? " **= " : " ::= ")
 		  .append(ruleString);
 		writer.println(sb.toString());
-		parser.forEachChild(this::writeGrammar);
+		parser.forEach(this::writeGrammar);
 		writer.flush();
 	}
 
