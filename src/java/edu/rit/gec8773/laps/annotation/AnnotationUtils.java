@@ -1,6 +1,6 @@
 package edu.rit.gec8773.laps.annotation;
 
-import edu.rit.gec8773.laps.Consumer;
+import edu.rit.gec8773.laps.MyConsumer;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
@@ -56,8 +56,8 @@ public class AnnotationUtils {
 	 * @param annotation the {@link Annotation} to look for
 	 * @return a method which invokes all the found methods
 	 */
-	public static Consumer<Void> getStaticMethod(Class<?> cls,
-									 Class<? extends Annotation> annotation) {
+	public static MyConsumer<Void> getStaticMethod(Class<?> cls,
+												   Class<? extends Annotation> annotation) {
 		List<Method> methods = new ArrayList<>();
 		for (Method method : cls.getDeclaredMethods()) {
 			if (method.getAnnotation(annotation) == null)
@@ -84,8 +84,8 @@ public class AnnotationUtils {
 	 * @param annotation the {@link Annotation} to look for
 	 * @return a method which invokes all the found methods on an object
 	 */
-	public static Consumer<Object> getInstanceMethod(Class<?> cls,
-									 Class<? extends Annotation> annotation) {
+	public static MyConsumer<Object> getInstanceMethod(Class<?> cls,
+													   Class<? extends Annotation> annotation) {
 		List<Method> methods = new ArrayList<>();
 		for (Method method : cls.getDeclaredMethods()) {
 			if (method.getAnnotation(annotation) == null)

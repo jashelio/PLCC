@@ -355,14 +355,14 @@ public abstract class Parser implements Serializable, Iterable<Parser> {
 					if (Resources.instance.debugEnabled())
 						System.out.println(name + " rule");
 					if (!ranOnce) {
-						Consumer<Void> runOnce = AnnotationUtils.getStaticMethod(cls,
+						MyConsumer<Void> runOnce = AnnotationUtils.getStaticMethod(cls,
 								RunBeforeFirstInit.class);
 						runOnce.accept(null);
 						ranOnce = true;
 					}
-					Consumer<Void> beforeEach = AnnotationUtils.getStaticMethod(cls,
+					MyConsumer<Void> beforeEach = AnnotationUtils.getStaticMethod(cls,
 							RunBeforeEachInit.class);
-					Consumer<Object> runAfter = AnnotationUtils.getInstanceMethod(cls,
+					MyConsumer<Object> runAfter = AnnotationUtils.getInstanceMethod(cls,
 							RunAfterEachInit.class);
 					Constructor<?>[] ctrs = cls.getConstructors();
 					beforeEach.accept(null);

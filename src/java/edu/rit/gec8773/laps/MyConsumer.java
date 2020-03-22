@@ -2,6 +2,11 @@ package edu.rit.gec8773.laps;
 
 import java.lang.reflect.InvocationTargetException;
 
-public interface Consumer<T> {
+/**
+ * Necessary for lambda expressions to throw exceptions
+ *
+ * @see java.util.function.Consumer
+ */
+public interface MyConsumer<T> {
     void accept(T t) throws InvocationTargetException;
 }
