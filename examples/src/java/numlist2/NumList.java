@@ -2,8 +2,6 @@ package numlist2;
 
 import edu.rit.gec8773.laps.annotation.*;
 
-import java.util.Objects;
-
 @GrammarRule
 public class NumList {
 
@@ -104,7 +102,7 @@ public class NumList {
     /**
      * Prints the list then its sum when not done
      */
-    @SemanticEntryPoint
+    @RunAfterEachInit
     public void run() {
         if (numbers == null)
             return;

@@ -50,7 +50,7 @@ public class NumList {
 		return result;
 	}
 
-	@SemanticEntryPoint // optional run after constructor
+	@RunAfterEachInit // optional run after constructor
 	public void run() {
 		System.out.println(sum());
 	}

@@ -3,7 +3,7 @@ package edu.rit.gec8773.laps;
 import edu.rit.gec8773.laps.annotation.AnnotationUtils;
 import edu.rit.gec8773.laps.annotation.RunBeforeEachInit;
 import edu.rit.gec8773.laps.annotation.RunBeforeFirstInit;
-import edu.rit.gec8773.laps.annotation.SemanticEntryPoint;
+import edu.rit.gec8773.laps.annotation.RunAfterEachInit;
 import edu.rit.gec8773.laps.resources.Resources;
 
 import java.io.IOException;
@@ -49,7 +49,7 @@ public abstract class Parser implements Serializable, Iterable<Parser> {
 	 * @return the created abstract syntax tree
 	 * @throws IOException when the {@link Scanner} has an I/O error
 	 * @throws InvocationTargetException when there is an uncaught exception in
-	 * a method marked with {@link SemanticEntryPoint},
+	 * a method marked with {@link RunAfterEachInit},
 	 * {@link RunBeforeEachInit}, and {@link RunBeforeFirstInit}
 	 * @throws InstantiationException when there is an uncaught exception in a
 	 * constructor of a grammar rule
@@ -363,7 +363,7 @@ public abstract class Parser implements Serializable, Iterable<Parser> {
 					Consumer<Void> beforeEach = AnnotationUtils.getStaticMethod(cls,
 							RunBeforeEachInit.class);
 					Consumer<Object> runAfter = AnnotationUtils.getInstanceMethod(cls,
-							SemanticEntryPoint.class);
+							RunAfterEachInit.class);
 					Constructor<?>[] ctrs = cls.getConstructors();
 					beforeEach.accept(null);
 					for (int i = 0; i < ctrs.length; ++i) {
