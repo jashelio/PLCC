@@ -45,7 +45,11 @@ public class Main {
 
 				"-d: Enables debugging output\n" +
 
-				"-h: Prints this usage message and exits normally");
+				"-h: Prints this usage message and exits normally\n" +
+
+				"\nNote: If you ever encounter a StackOverflowError during " +
+				"parsing of a large input, adding \"-Xss4m\" to the JVM " +
+				"arguments may fix your issue.");
 	}
 
 	/**
