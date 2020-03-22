@@ -1,5 +1,6 @@
 package edu.rit.gec8773.laps;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 import java.io.Serializable;
 
@@ -9,10 +10,9 @@ public class Token implements Serializable {
 	private Pattern regex;
 	private String value;
 
-	// TODO Make private after testing
-	public Token(String name, Pattern regex, String value) {
-		this.name = name;
-		this.regex = regex;
+	private Token(String name, Pattern regex, String value) {
+		this.name = Objects.requireNonNull(name);
+		this.regex = Objects.requireNonNull(regex);
 		this.value = value;
 	}
 
@@ -42,7 +42,7 @@ public class Token implements Serializable {
 		return value;
 	}
 
-	// Comparisons: only based on name and regex pattern
+	// Comparisons only based on name and regex pattern
 	
 	@Override
 	public int hashCode() {
