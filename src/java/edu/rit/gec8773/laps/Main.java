@@ -93,23 +93,6 @@ public class Main {
 	}
 
 	public static void main(String[] args) throws Throwable {
-		/*Runtime.getRuntime().addShutdownHook(new Thread() {
-			@Override
-			public void run() {
-				Set<Thread> runningThreads = Thread.getAllStackTraces().keySet();
-				for (Thread th : runningThreads) {
-					if (th != Thread.currentThread() 
-							&& !th.isDaemon()) {
-						System.out.println();
-						System.out.println(th.getName() + " Stack:");
-						Stream.of(Thread.getAllStackTraces().get(th))
-						      .forEach(System.out::println);
-						th.stop();
-						}
-				}
-				Thread.currentThread().stop();
-			}
-		});*/
 		int result = 0;
 		try {
 			r = Resources.instance;
