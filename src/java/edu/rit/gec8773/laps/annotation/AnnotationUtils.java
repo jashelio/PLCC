@@ -4,6 +4,8 @@ import edu.rit.gec8773.laps.Consumer;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AnnotationUtils {
 
@@ -20,35 +22,41 @@ public class AnnotationUtils {
 		return token != null && token.skip();
 	}
 
-	public static Consumer<Void> getStaticMethod(Class<?> cls, // TODO add check for multiple methods
-												 Class<? extends Annotation> annotation) {
+	public static Consumer<Void> getStaticMethod(Class<?> cls,
+									 Class<? extends Annotation> annotation) {
+		List<Method> methods = new ArrayList<>();
 		for (Method method : cls.getMethods()) {
 			if (method.getAnnotation(annotation) == null)
 				continue;
 			int modifiers = method.getModifiers();
 			if (Modifier.isStatic(modifiers) && Modifier.isPublic(modifiers))
-				return ignore -> {
-					try {
-						method.invoke(null);
-					} catch (IllegalAccessException ignored) {}
-				};
+				methods.add(method);
 		}
-		return ignore -> {};
+		return ignore -> {
+			for (Method method : methods) {
+				try {
+					method.invoke(null);
+				} catch (IllegalAccessException ignored) {}
+			}
+		};
 	}
 
-	public static Consumer<Object> getInstanceMethod(Class<?> cls, // TODO add check for multiple methods
-													 Class<? extends Annotation> annotation) {
+	public static Consumer<Object> getInstanceMethod(Class<?> cls,
+									 Class<? extends Annotation> annotation) {
+		List<Method> methods = new ArrayList<>();
 		for (Method method : cls.getMethods()) {
 			if (method.getAnnotation(annotation) == null)
 				continue;
 			int modifiers = method.getModifiers();
 			if (!Modifier.isStatic(modifiers) && Modifier.isPublic(modifiers))
-				return object -> {
-					try {
-						method.invoke(object);
-					} catch (IllegalAccessException ignored) {}
-				};
+				methods.add(method);
 		}
-		return object -> {};
+		return object -> {
+			for (Method method : methods) {
+				try {
+					method.invoke(object);
+				} catch (IllegalAccessException ignored) {}
+			}
+		};
 	}
 }
