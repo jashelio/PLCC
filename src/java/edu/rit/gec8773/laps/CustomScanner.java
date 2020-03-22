@@ -8,6 +8,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/**
+ * An implementation of a {@link Scanner} using {@link LineNumberReader} and
+ * {@link Matcher} to handle regular expression matching
+ *
+ * @see edu.rit.gec8773.laps.Scanner
+ * @see LineNumberReader
+ * @see Matcher
+ */
 public class CustomScanner implements Scanner {
 	private LineNumberReader lineReader;
 	private StringBuffer buffer;

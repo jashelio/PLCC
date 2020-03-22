@@ -6,6 +6,13 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+/**
+ * {@link Scanner} converts a stream of characters to a stream of
+ * {@link Token}s while keeping track of the line number it is reading from
+ *
+ * @see AutoCloseable
+ * @see Pattern
+ */
 public interface Scanner extends AutoCloseable {
 	/**
 	 * Checks if the next {@link Token} has a given {@link Pattern}
