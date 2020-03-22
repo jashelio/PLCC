@@ -6,6 +6,10 @@ import edu.rit.gec8773.laps.resources.Resources;
 import java.lang.reflect.*;
 import java.util.function.Function;
 
+/**
+ * Collects any and all valid {@link Token}s into {@link Resources} when
+ * annotated with {@link edu.rit.gec8773.laps.annotation.Token}
+ */
 public class TokenCollector {
 
     /**
