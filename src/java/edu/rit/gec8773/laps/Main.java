@@ -17,7 +17,30 @@ public class Main {
 	private static Parser g;
 	private static BNFWriter bnfWriter = null;
 
-	private static void usage() {}
+	private static void usage() {
+		System.out.println("laps [options]\n");
+		System.out.println("Options:");
+		System.out.println(
+				"-s [filename]: Saves the language to the " +
+				"specified filename or a filename set by the current time " +
+				"by default\n" +
+
+				"-b [filename]: Write the language grammar to the specified " +
+				"filename or stdout by default\n" +
+
+				"-l [filename]: Loads the language with the specified " +
+				"filename or the newest language file in the working " +
+				"directory by default (same format as the default save " +
+				"filename)\n" +
+
+				"-c class-name: Sets the grammatical entry point for the " +
+				"language (unnecessary if the language is loaded from a " +
+				"file)\n" +
+
+				"-d: Enables debugging output\n" +
+
+				"-h: Prints this usage message and exits normally");
+	}
 
 	private static void initArgParseMap() {
 		argParseMap = new HashMap<>();
@@ -54,6 +77,11 @@ public class Main {
 		});
 		argParseMap.put("d", (args, i) -> {
 			r.enableDebugOutput();
+			return i;
+		});
+		argParseMap.put("h", (args, i) -> {
+			usage();
+			System.exit(0);
 			return i;
 		});
 	}
