@@ -10,6 +10,9 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashMap;
 
+/**
+ * The main class which a user of the LAPS library could use
+ */
 public class Main {
 	private static final Integer COMMAND_LINE_ARGS_FAIL = -5;
 	private static Resources r;
@@ -17,6 +20,9 @@ public class Main {
 	private static Parser g;
 	private static BNFWriter bnfWriter = null;
 
+	/**
+	 * Prints out the usage message
+	 */
 	private static void usage() {
 		System.out.println("laps [options]\n");
 		System.out.println("Options:");
@@ -42,6 +48,9 @@ public class Main {
 				"-h: Prints this usage message and exits normally");
 	}
 
+	/**
+	 * Initializes the methods for commandline argument parser
+	 */
 	private static void initArgParseMap() {
 		argParseMap = new HashMap<>();
 		argParseMap.put("l", (args, i) -> {
@@ -86,11 +95,26 @@ public class Main {
 		});
 	}
 
-	private interface BiFunction<A,B,R> {
+	/**
+	 * Necessary to throw exceptions from lambda functions
+	 * @see java.util.function.BiFunction
+	 */
+	private interface MyBiFunction<A,B,R> {
 		R apply(A a, B b) throws Exception;
 	}
-	private static HashMap<String, 
-		BiFunction<String[], Integer, Integer>> argParseMap;
+
+	/**
+	 * Container for methods of each commandline argument
+	 */
+	private static HashMap<String,
+			MyBiFunction<String[], Integer, Integer>> argParseMap;
+
+	/**
+	 * Parses the commandline arguments
+	 *
+	 * @param args the arguments to parse
+	 * @throws Exception when an argument fails to parse
+	 */
 	private static void parseArgs(String[] args) throws Exception {
 		if (argParseMap == null)
 			initArgParseMap();
@@ -106,17 +130,40 @@ public class Main {
 		}
 	}
 
+	/**
+	 * Indicates if the language should be saved or not
+	 */
 	private static boolean save = false;
+
+	/**
+	 * The optional name of the file to save to
+	 */
 	private static String saveName = null;
+
+	/**
+	 * Sets {@link Main#save} to true, indicating that the language should be
+	 * saved to a file
+	 */
 	private static void setSave() {
 		save = true;
 	}
 
+	/**
+	 * Sets {@link Main#save} to true, indicating that the language should be
+	 * saved to a file with the given name
+	 *
+	 * @param name the name of the file to print to
+	 */
 	private static void setSave(String name) {
 		save = true;
 		saveName = name;
 	}
 
+	/**
+	 * Saves the language if {@link Main#save} is set to true
+	 *
+	 * @throws IOException
+	 */
 	private static void saveIfSet() throws IOException {
 		if (save) {
 			if (saveName == null)
@@ -126,6 +173,15 @@ public class Main {
 		}
 	}
 
+	/**
+	 * Parses commandline arguments and executes the language description
+	 * passed in. If no description is given, the program exits normally
+	 *
+	 * @param args the commandline arguments
+	 * @see Main#usage()
+	 * @throws Throwable when there is an uncaught exception in user code
+	 * @see Parser
+	 */
 	public static void main(String[] args) throws Throwable {
 		int result = 0;
 		try {
@@ -171,6 +227,11 @@ public class Main {
 		}
 	}
 
+	/**
+	 * Since this program runs from a JAR file, the Java classpath cannot be
+	 * set from commandline arguments. Thus, to add the current working
+	 * directory to the path, it must be added at runtime.
+	 */
 	private static void updateClassPath() {
 		URL url = null;
 		try {
