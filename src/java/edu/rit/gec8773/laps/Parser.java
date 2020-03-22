@@ -290,8 +290,7 @@ public abstract class Parser implements Serializable, Iterable<Parser> {
 						new Exception((cls.getName() + " is not associated " + 
 					"with a grammar rule")));
 
-		TokenCollector tokenCollector = new TokenCollector(cls);
-		tokenCollector.collect();
+		TokenCollector.collect(cls);
 
 		StringBuilder sb = new StringBuilder(cls.getSimpleName());
 		sb.insert(0, "<")
