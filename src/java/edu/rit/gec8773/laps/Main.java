@@ -2,12 +2,8 @@ package edu.rit.gec8773.laps;
 
 import edu.rit.gec8773.laps.resources.Resources;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.HashMap;
 
 /**
@@ -68,7 +64,6 @@ public class Main {
 			if (i + 1 == args.length || args[i + 1].startsWith("-")) {
 				return COMMAND_LINE_ARGS_FAIL;
 			}
-			updateClassPath();
 			ClassLoader loader = Thread.currentThread().getContextClassLoader();
 			r.setParserHead(Parser.grammarRule(
 				loader.loadClass(args[++i])));
@@ -229,23 +224,5 @@ public class Main {
 				sc.close();
 			System.exit(result);
 		}
-	}
-
-	/**
-	 * Since this program runs from a JAR file, the Java classpath cannot be
-	 * set from commandline arguments. Thus, to add the current working
-	 * directory to the path, it must be added at runtime.
-	 */
-	private static void updateClassPath() {
-		URL url = null;
-		try {
-			url = new File(System.getProperty("user.dir")).toURL();
-		} catch (MalformedURLException e) {
-			System.out.println(e.getMessage());
-			e.printStackTrace();
-		}
-		ClassLoader contextCL = Thread.currentThread().getContextClassLoader();
-		ClassLoader urlCL = URLClassLoader.newInstance(new URL[] { url }, contextCL);
-		Thread.currentThread().setContextClassLoader(urlCL);
 	}
 }

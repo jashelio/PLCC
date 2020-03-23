@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Run" type="Application" factoryName="Application" singleton="false">
+    <option name="MAIN_CLASS_NAME" value="edu.rit.gec8773.laps.Main" />
+    <module name="Example Languages" />
+    <option name="PROGRAM_PARAMETERS" value="-l -b" />
+    <option name="REDIRECT_INPUT" value="true" />
+    <option name="INPUT_FILE" value="$PROJECT_DIR$/examples/numlist2/345.numlist2" />
+    <option name="VM_PARAMETERS" value="-cp &quot;C:\Users\gcasp\IdeaProjects\LAPS\out\jar\LAPS.jar;C:\Users\gcasp\IdeaProjects\LAPS\out\production\Example Languages&quot;" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/out/production/Example Languages" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
