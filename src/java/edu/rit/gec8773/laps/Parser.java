@@ -11,11 +11,9 @@ import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Parameter;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Stack;
+import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -284,6 +282,8 @@ public abstract class Parser implements Serializable, Iterable<Parser> {
 	 */
 	public static Parser grammarRule(Class<?> cls)
 			throws InvocationTargetException {
+		if (Resources.instance.hasParser(cls))
+			return Resources.instance.getParser(cls);
 		boolean isHead = processing.size() == 0;
 		if (!AnnotationUtils.isGrammarRule(cls))
 			throw new InvocationTargetException(
@@ -298,19 +298,15 @@ public abstract class Parser implements Serializable, Iterable<Parser> {
 		String name = sb.toString();
 
 		if (processing.add(cls)) {
-			ArrayList<Parser> ruleList = new ArrayList<>();
-			boolean isAcceptEmpty = false;
-			int i = 0;
+			HashMap<List<Class>, Parser> ruleMap = new HashMap();
 			for (Constructor<?> ctr : cls.getConstructors()) {
-				Object[] rules = ctr.getParameters();
+				Parameter[] rules = ctr.getParameters();
 				if (rules.length == 0) {
-					isAcceptEmpty = true;
+					ruleMap.put(List.of(), EMPTY);
 					continue;
 				}
-				if (!isAcceptEmpty)
-					++i;
-				Parser seqRule = Parser.seq(rules);
-				for (Parser rule : ruleList) // TODO make Parser.equals()
+				Parser seqRule = Parser.seq((Object[])rules);
+				for (Parser rule : ruleMap.values()) // TODO make Parser.equals()
 					if (rule.parsingRules
 						.get(0)
 						.toString()
@@ -323,22 +319,12 @@ public abstract class Parser implements Serializable, Iterable<Parser> {
 						new Exception(("Two or more grammar" + 
 								" rules have the same" + 
 								" starting rule in " + cls)));
-				ruleList.add(seqRule);
+				List<Class> types = Arrays.stream(rules)
+									  .map(parameter -> (Class)parameter.getType())
+									  .collect(Collectors.toList());
+				ruleMap.put(types, seqRule);
 			}
-			int emptyIndex = i;
-			boolean acceptEmpty = isAcceptEmpty;
-			if (acceptEmpty)
-				ruleList.add(Parser.seq());
-			int[] ctrToRule = new int[ruleList.size()];
-			for (i = 0; i < ctrToRule.length; ++i) 
-				if (i < emptyIndex)
-					ctrToRule[i] = i;
-				else if (i == emptyIndex)
-					ctrToRule[i] = ruleList.size() - 1;
-				else
-					ctrToRule[i] = i - 1;
-			Object[] ruleArray = new Object[ruleList.size()];
-			ruleArray = ruleList.toArray(ruleArray);
+			Object[] ruleArray = ruleMap.values().toArray();
 			Parser result = new Parser(ruleArray) {
 				private Stack<Parser> acceptedRulesStack = new Stack<>();
 				// TODO make use of callstack instead
@@ -366,10 +352,17 @@ public abstract class Parser implements Serializable, Iterable<Parser> {
 							RunAfterEachInit.class);
 					Constructor<?>[] ctrs = cls.getConstructors();
 					beforeEach.accept(null);
+					int emptyIndex = -1;
 					for (int i = 0; i < ctrs.length; ++i) {
-						if (acceptEmpty && i == emptyIndex)
+						Parameter[] rules = ctrs[i].getParameters();
+						if (rules.length == 0) {
+							emptyIndex = i;
 							continue;
-						Parser rule = parsingRules.get(ctrToRule[i]);
+						}
+						List<Class> types = Arrays.stream(rules)
+								.map(parameter -> (Class)parameter.getType())
+								.collect(Collectors.toList());
+						Parser rule = ruleMap.get(types);
 						Object[] parsed = (Object[])rule.parse(sc);
 						if (parsed == null) {
 							rule.returnTokens(sc);
@@ -377,27 +370,25 @@ public abstract class Parser implements Serializable, Iterable<Parser> {
 						}
 						acceptedRulesStack.push(rule);
 						parsed = Stream.of(parsed)
-							       .map( elm -> elm instanceof Token ? 
-									((Token)elm).getValue() : 
-									elm )
+							       .map( elm -> elm instanceof Token
+									? ((Token)elm).getValue() : elm )
 							       .toArray();
 						Object AST = null;
 						try {
+							if (Resources.instance.debugEnabled())
+								System.out.println("Initializing object with " + ctrs[i]);
 							AST = ctrs[i].newInstance(parsed);
 						} catch (IllegalAccessException ignored) {}
 						runAfter.accept(AST);
 						return AST;
 					}
-					if (acceptEmpty) {
+					if (emptyIndex != -1) {
 						acceptedRulesStack.push(EMPTY);
 						try {
+							if (Resources.instance.debugEnabled())
+								System.out.println("Initializing object with " + ctrs[emptyIndex]);
 							return ctrs[emptyIndex].newInstance();
-						} catch (Exception e) {
-							// should never happen
-							// unless exception in USER code TODO
-							System.err.println(e.getMessage());
-							e.printStackTrace();
-						}
+						} catch (IllegalAccessException ignored) {}
 					}
 					return null;
 				}
@@ -415,11 +406,20 @@ public abstract class Parser implements Serializable, Iterable<Parser> {
 				@Override
 				public String toString() {
 					StringBuilder sb = new StringBuilder();
+					boolean addEmpty = false;
 					for (Parser child : parsingRules)
-						sb.append(child.getName() == null ? 
-								child.toString() :
-								child.getName())
-							.append(" | ");
+						if (child == EMPTY)
+							addEmpty = true;
+						else
+							sb.append(child.getName() == null ?
+									child.toString() :
+									child.getName())
+								.append(" | ");
+					if (addEmpty)
+						sb.append(EMPTY.getName() == null ?
+								EMPTY.toString() :
+								EMPTY.getName())
+								.append(" | ");
 					return sb.substring(0, sb.length() - 3);
 				}
 
