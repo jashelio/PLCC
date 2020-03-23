@@ -33,14 +33,12 @@ public class Resources implements Serializable {
 			if (file.isDirectory())
 				throw new IOException("Can't write to file: " +
 						fileName + " is directory");
-//			else
-//				System.err.println("Warning: overwriting " + 
-//						"existing file " + fileName);
 		} else
 			file.createNewFile();
-		try (ObjectOutputStream out = new ObjectOutputStream(
-					new FileOutputStream(file))) {
+		try (FileOutputStream fileOut = new FileOutputStream(file);
+			 ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
 			out.writeUnshared(instance);
+			out.flush();
 		}
 	}
 
@@ -58,7 +56,6 @@ public class Resources implements Serializable {
 		if (!dir.exists() || !dir.isDirectory())
 			throw new IOException(dir.getAbsolutePath() + " does " +
 					"not exist as a directory");
-		File loadFrom = null;
 		Date newest = null;
 		int newestIndex = -1;
 		newest = new Date(0);
@@ -66,10 +63,12 @@ public class Resources implements Serializable {
 		for (int i = 0; i < files.length; ++i)
 			try {
 				File file = files[i];
+				if (!file.getAbsolutePath().endsWith(FILE_EXTENSION))
+					continue;
+				int fileNameLength = file.getName().length()
+									 - FILE_EXTENSION.length();
 				String dateString = file.getName()
-						.substring(0,
-								file.getName().length() -
-										FILE_EXTENSION.length())
+						.substring(0, fileNameLength)
 						.replaceFirst("-","/")
 						.replaceFirst("-","/")
 						.replaceFirst("-", ",")
@@ -82,7 +81,8 @@ public class Resources implements Serializable {
 				}
 			} catch (ParseException e) { }
 		if (newestIndex == -1)
-			throw new IOException("No resources file found");
+			throw new IOException("No language file (" + FILE_EXTENSION +
+					") found  in " + dir.getAbsolutePath());
 		load(files[newestIndex].getAbsolutePath());
 	}
 
@@ -93,25 +93,24 @@ public class Resources implements Serializable {
 					" does not exist");
 		if (file.isDirectory())
 			throw new IOException(fileName + " is a directory");
+		if (!fileName.endsWith(FILE_EXTENSION))
+			System.err.println("Warning: not loading from a file with \"" +
+					FILE_EXTENSION + "\" as a file extension");
 		try (ObjectInputStream in = new ObjectInputStream(
 					new FileInputStream(file))) {
-			try {
 				Object o = in.readUnshared();
-/* TODO	TEMP*/			if (o instanceof Resources)
+				if (o instanceof Resources)
 					instance.load((Resources) o);
-//					instance = (Resources) o;
-				// TODO add error handling
-			} catch (Exception e) {
-				System.err.println(e.getMessage());
-				e.printStackTrace();
-			}
-					}
+		} catch (ClassNotFoundException e) {
+			throw new IOException(e);
+		} // TODO
 	}
 
 	private void load(Resources r) {
 		this.tokenStorage = r.tokenStorage;
 		this.parserStorage = r.parserStorage;
-		tokenStorage.forEachToken( token -> token.getRegex().matcher("for Java bug").matches());
+		tokenStorage.forEachToken( token -> token.getRegex()
+				.matcher("for Java 13 bug").matches());
 	}
 
 	private boolean debug = false;
