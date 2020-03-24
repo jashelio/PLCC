@@ -338,14 +338,14 @@ public abstract class Parser implements Serializable, Iterable<Parser> {
 				@Override
 				public Object parse(Scanner sc) throws IOException,
 						InvocationTargetException, InstantiationException {
-					if (Resources.instance.debugEnabled())
-						System.out.println(name + " rule");
 					if (!ranOnce) {
 						MyConsumer<Void> runOnce = AnnotationUtils.getStaticMethod(cls,
 								RunBeforeFirstInit.class);
 						runOnce.accept(null);
 						ranOnce = true;
 					}
+					if (Resources.instance.debugEnabled())
+						System.out.println("Trying to parse: " + name + " rule");
 					MyConsumer<Void> beforeEach = AnnotationUtils.getStaticMethod(cls,
 							RunBeforeEachInit.class);
 					MyConsumer<Object> runAfter = AnnotationUtils.getInstanceMethod(cls,
@@ -376,7 +376,8 @@ public abstract class Parser implements Serializable, Iterable<Parser> {
 						Object AST = null;
 						try {
 							if (Resources.instance.debugEnabled())
-								System.out.println("Initializing object with " + ctrs[i]);
+								System.out.println("Accepted " + name +
+										" rule with sequence: " + rule );
 							AST = ctrs[i].newInstance(parsed);
 						} catch (IllegalAccessException ignored) {}
 						runAfter.accept(AST);
@@ -386,10 +387,14 @@ public abstract class Parser implements Serializable, Iterable<Parser> {
 						acceptedRulesStack.push(EMPTY);
 						try {
 							if (Resources.instance.debugEnabled())
-								System.out.println("Initializing object with " + ctrs[emptyIndex]);
+								System.out.println("Accepted " + name +
+										" rule with sequence: " + EMPTY );
 							return ctrs[emptyIndex].newInstance();
 						} catch (IllegalAccessException ignored) {}
 					}
+					if (Resources.instance.debugEnabled())
+						System.out.println("Failed to accept " + name +
+								" rule");
 					return null;
 				}
 
