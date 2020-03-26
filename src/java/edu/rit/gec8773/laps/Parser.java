@@ -385,12 +385,15 @@ public abstract class Parser implements Serializable, Iterable<Parser> {
 					}
 					if (emptyIndex != -1) {
 						acceptedRulesStack.push(EMPTY);
+						Object AST = null;
 						try {
 							if (Resources.instance.debugEnabled())
 								System.out.println("Accepted " + name +
 										" rule with sequence: " + EMPTY );
-							return ctrs[emptyIndex].newInstance();
+							AST = ctrs[emptyIndex].newInstance();
 						} catch (IllegalAccessException ignored) {}
+						runAfter.accept(AST);
+						return AST;
 					}
 					if (Resources.instance.debugEnabled())
 						System.out.println("Failed to accept " + name +
