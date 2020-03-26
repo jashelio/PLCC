@@ -5,6 +5,7 @@ import edu.rit.gec8773.laps.resources.Resources;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 /**
  * The main class which a user of the LAPS library could use
@@ -195,28 +196,24 @@ public class Main {
 			sc = new CustomScanner(System.in);
 			Object AST = g.parse(sc);
 			if (AST == null) {
-				System.out.print("Could not parse input: \"");
+				System.out.print("\nCould not parse input: \"");
 				System.out.print(sc.getBufferString());
 				System.out.println("\" on line " + sc.getLineNumber());
 			}
 		} catch (InvocationTargetException e) { // for user exceptions
 			result = -3;
 			Throwable t = e.getTargetException();
-			System.err.println("Could not complete execution of the " +
-					"Abstract Syntax Tree's semantics due to the below " +
-					"exception.");
-			t.printStackTrace();
+			printStackTrace(t);
 		} catch (InstantiationException e) { // for user exceptions
 			result = -4;
 			Throwable t = e.getCause();
-			System.err.println("Could not complete construction of the " +
-					"Abstract Syntax Tree due to the below exception.");
-			t.printStackTrace();
+			printStackTrace(t);
 		} catch (IOException ioe) {
-			System.out.println("I/O Error: " + ioe.getMessage());
+			System.err.println("\nI/O Error: " + ioe.getMessage());
 			ioe.printStackTrace();
 			result = -2;
 		} catch (Exception e) {
+			System.err.println();
 			e.printStackTrace();
 			result = -1;
 		} finally {
@@ -224,5 +221,20 @@ public class Main {
 				sc.close();
 			System.exit(result);
 		}
+	}
+
+	private static void printStackTrace(Throwable throwable) {
+		StackTraceElement[] elements = throwable.getStackTrace();
+		Pattern nativeConstructorPattern = Pattern.compile("java\\.base\\/jdk" +
+				"\\.internal\\.reflect\\.NativeConstructorAccessorImpl\\." +
+				"newInstance0\\(Native Method\\)");
+		System.err.println();
+		System.err.println(throwable);
+		for (StackTraceElement element : elements)
+			if (nativeConstructorPattern.matcher(element.toString())
+										.matches())
+				break;
+			else
+				System.err.println("    at " + element);
 	}
 }
