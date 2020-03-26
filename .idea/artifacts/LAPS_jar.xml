@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
   <artifact build-on-make="true" name="LAPS:jar">
-    <output-path>$PROJECT_DIR$/out/jar</output-path>
+    <output-path>$PROJECT_DIR$/out/production/LAPS</output-path>
     <root id="root">
       <element id="archive" name="LAPS.jar">
         <element id="module-output" name="LAPS" />
