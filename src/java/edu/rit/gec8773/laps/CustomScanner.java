@@ -58,7 +58,10 @@ public class CustomScanner implements Scanner {
 	 * @throws IOException
 	 */
 	private void updateBuffer() throws IOException {
-		buffer.appendCodePoint(lineReader.read());
+		int charCode = lineReader.read();
+		if (charCode == -1)
+			throw new IOException("Unexpected end of input");
+		buffer.appendCodePoint(charCode);
 	}
 
 	/**
