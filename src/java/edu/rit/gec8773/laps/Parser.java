@@ -303,6 +303,11 @@ public abstract class Parser implements Serializable, Iterable<Parser> {
 			for (Constructor<?> ctr : cls.getConstructors()) {
 				Parameter[] rules = ctr.getParameters();
 				if (rules.length == 0) {
+					if (isHead)
+						throw new InvocationTargetException(
+								new Exception((cls + " cannot accept an empty" +
+										" grammar rule since it's the top of " +
+										"the context free grammar")));
 					ruleMap.put(List.of(), EMPTY);
 					continue;
 				}
