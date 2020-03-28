@@ -99,8 +99,9 @@ public abstract class Parser implements Serializable, Iterable<Parser> {
 				parsingRules.add(Parser.grammarRule((Class<?>)rule));
 			} else
 				throw new InvocationTargetException(
-						new Exception(rule + 
-						" is not a defined token")); 
+						new Exception(rule + " is not a defined token; don't " +
+								"forget to add the \"-parameters\" compilation" +
+								" flag to javac"));
 		}
 	}
 
