@@ -76,17 +76,17 @@ public class CustomScanner implements Scanner {
 	private Integer findEnd(Pattern pattern) throws IOException {
 		if (buffer.length() == 0)
 			updateBuffer(); // ensure there is at least 1 char in buf
-		if (buffer.length() == 0)
-			return null;
 //	DEBUG	System.out.println("Contents of buffer: " + buffer);
 		Matcher matcher = pattern.matcher(buffer);
+		if (buffer.length() == 0)
+			return matcher.lookingAt() ? matcher.end() : null;
 		int end = 1;
 		do {
 			matcher.region(0, end++).matches();
 			if (end > buffer.length())
 				updateBuffer();
 			if (end > buffer.length())
-				return null;
+				break;
 		} while (matcher.hitEnd());
 		if (matcher.lookingAt()) {
 //	DEBUG		System.out.println("end: " + matcher.end());
