@@ -1,6 +1,7 @@
 package myLanguage.expression;
 
 import edu.rit.gec8773.laps.annotation.GrammarRule;
+import edu.rit.gec8773.laps.annotation.Priority;
 import myLanguage.environment.Environment;
 import myLanguage.expression.literal.LiteralExpression;
 import myLanguage.value.Value;
@@ -36,22 +37,27 @@ public class Expression {
         innerExpression = expression;
     }
 
+    @Priority(-5)
     public Expression(LetExpression expression) {
         innerExpression = expression;
     }
 
+    @Priority(-4)
     public Expression(AssignmentExpression expression) {
         innerExpression = expression;
     }
 
+    @Priority(-5)
     public Expression(LiteralExpression expression) {
         innerExpression = expression;
     }
 
+    @Priority(-3)
     public Expression(ApplicationExpression expression) {
         innerExpression = expression;
     }
 
+    @Priority(5)
     public Expression(VariableExpression expression) {
         innerExpression = expression;
     }

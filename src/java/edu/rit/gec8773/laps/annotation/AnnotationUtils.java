@@ -102,4 +102,9 @@ public class AnnotationUtils {
 			}
 		};
 	}
+
+    public static int priority(Constructor<?> ctr) {
+		Priority priority = ctr.getAnnotation(Priority.class);
+		return priority != null ? priority.value() : 0;
+    }
 }

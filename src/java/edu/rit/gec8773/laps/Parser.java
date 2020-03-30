@@ -353,6 +353,9 @@ public abstract class Parser implements Serializable, Iterable<Parser> {
 					return name;
 				}
 
+				private void constructPriorityArray(Constructor<?>[] ctrs) {
+				}
+
 				@Override
 				public Object parse(Scanner sc) throws IOException,
 						InvocationTargetException, InstantiationException {
@@ -370,6 +373,7 @@ public abstract class Parser implements Serializable, Iterable<Parser> {
 							RunAfterEachInit.class);
 					Constructor<?>[] ctrs = cls.getConstructors();
 					beforeEach.accept(null);
+					Arrays.sort(ctrs, Comparator.comparingInt(AnnotationUtils::priority));
 					int emptyIndex = -1;
 					for (int i = 0; i < ctrs.length; ++i) {
 						Parameter[] rules = ctrs[i].getParameters();

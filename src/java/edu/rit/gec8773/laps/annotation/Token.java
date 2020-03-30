@@ -7,10 +7,10 @@ import java.lang.reflect.*;
 import java.util.function.Function;
 
 /**
- * Indicates that the annotated field is a token. This field must be public and
- * static to be available to the LAPS library
+ * Indicates that the annotated field or method is a token. This target must be
+ * public and static to be available to the LAPS library
  */
-@Target(ElementType.FIELD)
+@Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Token {
 	boolean skip() default false;
