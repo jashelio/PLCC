@@ -135,7 +135,7 @@ public abstract class Parser implements Serializable, Iterable<Parser> {
 
 	@Override
 	public String toString() {
-		return null;
+		return "";
 	}
 
 	/**
@@ -312,24 +312,36 @@ public abstract class Parser implements Serializable, Iterable<Parser> {
 					continue;
 				}
 				Parser seqRule = Parser.seq((Object[])rules);
-				for (Parser rule : ruleMap.values()) // TODO make Parser.equals()
-					if (rule.parsingRules
-						.get(0)
-						.toString()
-						.startsWith(
-							seqRule.parsingRules
-							       .get(0)
-							       .toString()
-							))
-						throw new InvocationTargetException(
-						new Exception(("Two or more grammar" + 
-								" rules have the same" + 
-								" starting rule in " + cls)));
+				// TODO add a better check for rules starting with same token
+//				for (Parser rule : ruleMap.values()) // TODO make Parser.equals()
+//					if (!(rule == EMPTY || seqRule == EMPTY) &&
+//							rule.parsingRules
+//								.get(0)
+//								.toString()
+//								.equals(
+//									seqRule.parsingRules
+//										   .get(0)
+//										   .toString()
+//							))
+//						throw new InvocationTargetException(
+//						new Exception(("Two or more grammar" +
+//								" rules have the same" +
+//								" starting rule in " + cls +
+//								"\n    Found: " + rule.parsingRules
+//								.get(0).toString() + " and " +
+//								seqRule.parsingRules
+//										.get(0)
+//										.toString())));
 				List<Class> types = Arrays.stream(rules)
 									  .map(parameter -> (Class)parameter.getType())
 									  .collect(Collectors.toList());
 				ruleMap.put(types, seqRule);
 			}
+			if (ruleMap.size() == 0)
+				throw new InvocationTargetException(
+						new Exception((cls + " has no accessible grammar " +
+								"rules make sure at least one constructor " +
+								"is public")));
 			Object[] ruleArray = ruleMap.values().toArray();
 			Parser result = new Parser(ruleArray) {
 				private Stack<Parser> acceptedRulesStack = new Stack<>();
@@ -430,9 +442,7 @@ public abstract class Parser implements Serializable, Iterable<Parser> {
 									child.getName())
 								.append(" | ");
 					if (addEmpty)
-						sb.append(EMPTY.getName() == null ?
-								EMPTY.toString() :
-								EMPTY.getName())
+						sb.append("e")
 								.append(" | ");
 					return sb.substring(0, sb.length() - 3);
 				}

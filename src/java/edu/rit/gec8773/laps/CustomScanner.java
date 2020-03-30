@@ -60,7 +60,7 @@ public class CustomScanner implements Scanner {
 	private void updateBuffer() throws IOException {
 		int charCode = lineReader.read();
 		if (charCode == -1)
-			throw new IOException("Unexpected end of input");
+			return;
 		buffer.appendCodePoint(charCode);
 	}
 
@@ -76,6 +76,8 @@ public class CustomScanner implements Scanner {
 	private Integer findEnd(Pattern pattern) throws IOException {
 		if (buffer.length() == 0)
 			updateBuffer(); // ensure there is at least 1 char in buf
+		if (buffer.length() == 0)
+			return null;
 //	DEBUG	System.out.println("Contents of buffer: " + buffer);
 		Matcher matcher = pattern.matcher(buffer);
 		int end = 1;
@@ -83,6 +85,8 @@ public class CustomScanner implements Scanner {
 			matcher.region(0, end++).matches();
 			if (end > buffer.length())
 				updateBuffer();
+			if (end > buffer.length())
+				return null;
 		} while (matcher.hitEnd());
 		if (matcher.lookingAt()) {
 //	DEBUG		System.out.println("end: " + matcher.end());

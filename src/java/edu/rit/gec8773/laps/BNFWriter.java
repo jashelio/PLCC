@@ -80,7 +80,7 @@ public class BNFWriter implements AutoCloseable {
 			return;
 		String name = parser.getName();
 		String ruleString = parser.toString();
-		if (name == null || ruleString == null) {
+		if (name == null || ruleString.equals("")) {
 			if (parser.hasChildren())
 				parser.forEach(this::writeGrammar);
 			return;
