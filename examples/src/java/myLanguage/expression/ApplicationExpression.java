@@ -20,7 +20,7 @@ public class ApplicationExpression extends Expression {
 
     @Override
     public Value evaluate(Environment environment) {
-        System.out.println("Trying to apply: " + this);
+//        System.out.println("Trying to apply: " + this);
 //        System.out.println("With myLanguage.environment: " + myLanguage.environment);
         Value function = environment.get(applying);
 //        System.out.println("With myLanguage.function: " + myLanguage.function);

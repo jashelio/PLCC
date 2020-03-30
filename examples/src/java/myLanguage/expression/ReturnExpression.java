@@ -7,8 +7,7 @@ import myLanguage.value.Value;
 
 @GrammarRule
 public class ReturnExpression extends Expression {
-    @Token
-    public static final String RETURN = "return";
+    @Token public static final String RETURN = "return";
 
     private Expression returnExpression;
 

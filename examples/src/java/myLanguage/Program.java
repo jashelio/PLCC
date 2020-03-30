@@ -15,24 +15,16 @@ import myLanguage.value.Value;
 public class Program {
     @Token(skip = true)
     public static final String WHITESPACE = "\\s+";
-    @Token
-    public static final String VAR = "[a-zA-Z]\\w*";
-    @Token
-    public static final String OPTIONALVAR = "([a-zA-Z]\\w*)|";
+    @Token public static final String VAR = "[a-zA-Z]\\w*";
+    @Token public static final String OPTIONALVAR = "([a-zA-Z]\\w*)|";
 
-    @Token
-    public static final String LPAREN = "\\(";
-    @Token
-    public static final String RPAREN = "\\)";
-    @Token
-    public static final String LBRACE = "\\{";
-    @Token
-    public static final String RBRACE = "\\}";
+    @Token public static final String LPAREN = "\\(";
+    @Token public static final String RPAREN = "\\)";
+    @Token public static final String LBRACE = "\\{";
+    @Token public static final String RBRACE = "\\}";
 
-    @Token
-    public static final String SEMICOLON = ";";
-    @Token
-    public static final String COMMA = ",";
+    @Token public static final String SEMICOLON = ";";
+    @Token public static final String COMMA = ",";
 
     private TopExpressions expressions;
 

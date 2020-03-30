@@ -9,14 +9,10 @@ import myLanguage.value.Value;
 @GrammarRule
 public class LiteralExpression extends Expression {
 
-    @Token
-    public static final String STRINGLITERAL = "\"[^\"]*\"";
-    @Token
-    public static final String CHARLITERAL = "'.'";
-    @Token
-    public static final String INTLITERAL = "[\\+\\-]?\\d+";
-    @Token
-    public static final String DOUBLELITERAL = "[\\+\\-]?(\\d+\\.\\d*|\\.\\d+)";
+    @Token public static final String STRINGLITERAL = "\"[^\"]*\"";
+    @Token public static final String CHARLITERAL = "'.'";
+    @Token public static final String INTLITERAL = "[\\+\\-]?\\d+";
+    @Token public static final String DOUBLELITERAL = "[\\+\\-]?(\\d+\\.\\d*|\\.\\d+)";
 
     private Value value;
 

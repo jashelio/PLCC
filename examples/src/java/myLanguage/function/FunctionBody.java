@@ -47,12 +47,10 @@ public class FunctionBody implements Iterable<Expression> {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("{");
-        try {
-            for (Expression expression : this) {
-                sb.append("\n\t")
-                        .append(expression);
-            }
-        } catch (NullPointerException e) {}
+        for (Expression expression : this) {
+            sb.append("\n\t")
+              .append(expression);
+        }
         return sb.append("\n}").toString();
     }
 }

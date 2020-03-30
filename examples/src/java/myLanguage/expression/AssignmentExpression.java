@@ -7,8 +7,7 @@ import myLanguage.value.Value;
 
 @GrammarRule
 public class AssignmentExpression extends Expression {
-    @Token
-    public static final String ASSIGN = "=";
+    @Token public static final String ASSIGN = "=";
 
     private String name;
     private Expression valExpression;

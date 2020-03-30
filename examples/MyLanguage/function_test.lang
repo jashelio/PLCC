@@ -1,26 +1,24 @@
-myLanguage.function true(then, else) {
+function true(then, else) {
 	then();
 }
-myLanguage.function false(then, else) {
+function false(then, else) {
 	else();
 }
-myLanguage.function if(cond, then, else) {
-    print(cond);
+function if(cond, then, else) {
 	cond(then, else);
 }
-myLanguage.function factorial(n) {
-    printEnv();
-    myLanguage.function baseCase() {
+function factorial(n) {
+    function baseCase() {
         1;
     }
-    myLanguage.function recursion() {
-        mult(n,sub(n, 1));
+    function recursion() {
+        mult(n,factorial(sub(n, 1)));
     }
     if (isZero(n), baseCase, recursion);
 }
+print(factorial(5));
 printEnv();
 print(isZero(5));
-print(factorial(5));
 
 print(if(true, "true", "false"));
 print(if(false, "true", "false"));

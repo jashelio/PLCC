@@ -7,8 +7,7 @@ import myLanguage.value.Value;
 
 @GrammarRule
 public class LetExpression extends Expression {
-    @Token
-    public static final String LET = "let";
+    @Token public static final String LET = "let";
 
     private String name;
     private AssignmentExpression assignment;

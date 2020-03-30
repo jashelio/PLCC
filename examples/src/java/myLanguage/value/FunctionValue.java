@@ -26,8 +26,8 @@ public class FunctionValue extends Value {
     public static FunctionValue primitiveFunction(int paramNumber, Function<Environment, Value> function) {
         FunctionValue result = new FunctionValue();
         List<String> paramList = new ArrayList<>();
-        for (int i = 0; i < paramNumber; i += 26) {
-            paramList.add(Character.toString('a' + i));
+        for (int i = 0; i < paramNumber; ++i) {
+            paramList.add(Character.toString(((int)'a') + i));
         }
         result.parameters = FunctionParameters.fromList(paramList);
         result.body = FunctionBody.fromFunction(function);
@@ -38,7 +38,8 @@ public class FunctionValue extends Value {
     @Override
     public Value apply(Value[] args) {
         if (args.length != parameters.size())
-            throw new RuntimeException();
+            throw new RuntimeException("Number of arguments: " + args.length +
+                    " != number of parameters: " + parameters.size());
         Environment environment = definedEnvironment.extendEnvironment();
         int i = 0;
         for (String param : parameters) {

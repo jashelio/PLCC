@@ -9,8 +9,7 @@ import myLanguage.value.Value;
 
 @GrammarRule
 public class FunctionDefinition extends Expression {
-    @Token
-    public static final String FUNCTION = "myLanguage/function";
+    @Token public static final String FUNCTION = "function";
 
     private String name;
     private FunctionParameters parameters;
@@ -29,5 +28,10 @@ public class FunctionDefinition extends Expression {
             return value;
         environment.setNewBinding(name, value);
         return environment.set(name, value);
+    }
+
+    @Override
+    public String toString() {
+        return FUNCTION + " " + name + parameters + " " + body;
     }
 }
