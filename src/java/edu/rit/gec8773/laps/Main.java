@@ -199,6 +199,10 @@ public class Main {
 				System.out.print("\nCould not parse input: \"");
 				System.out.print(sc.getBufferString());
 				System.out.println("\" on line " + sc.getLineNumber());
+			} else {
+				System.out.print("\nUnparsed input: \"");
+				System.out.print(sc.getBufferString());
+				System.out.println("\" got to line " + sc.getLineNumber());
 			}
 		} catch (InvocationTargetException e) { // for user exceptions
 			result = -3;
