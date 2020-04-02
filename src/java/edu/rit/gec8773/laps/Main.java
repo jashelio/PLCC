@@ -36,11 +36,14 @@ public class Main {
 				"directory by default (same format as the default save " +
 				"filename)\n" +
 
-				"-c class-name: Sets the grammatical entry point for the " +
+				"-c <class-name>: Sets the grammatical entry point for the " +
 				"language (unnecessary if the language is loaded from a " +
 				"file)\n" +
 
 				"-d: Enables debugging output\n" +
+
+				"-f <filename>: executes source code from the file with the " +
+				"given filename in the described language\n" +
 
 				"-h: Prints this usage message and exits normally\n" +
 
@@ -86,6 +89,14 @@ public class Main {
 		});
 		argParseMap.put("d", (args, i) -> {
 			r.enableDebugOutput();
+			return i;
+		});
+		argParseMap.put("f", (args, i) -> {
+			if (i + 1 == args.length || args[i + 1].startsWith("-"))
+				throw new IllegalArgumentException("the -f option requires a " +
+						"file argument");
+			else
+				sc = new CustomScanner(args[++i]);
 			return i;
 		});
 		argParseMap.put("h", (args, i) -> {
@@ -193,7 +204,8 @@ public class Main {
 				bnfWriter.writeGrammar(g);
 				bnfWriter.close();
 			}
-			sc = new CustomScanner(System.in);
+			if (sc == null)
+				sc = new CustomScanner(System.in);
 			Object AST = g.parse(sc);
 			if (AST == null) {
 				System.out.print("\nCould not parse input: \"");
