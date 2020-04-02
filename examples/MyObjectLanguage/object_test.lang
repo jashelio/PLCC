@@ -1,0 +1,119 @@
+print("This is a memory test");
+print("Check out the memory usage in task manager");
+print("Press enter to continue through prompts");
+input();
+
+function true(then, else) {
+	then();
+}
+function trueWrapped() {
+    true;
+}
+function false(then, else) {
+	else();
+}
+function falseWrapped() {
+    false;
+}
+function if(cond, then, else) {
+	cond(then, else);
+}
+function nothing() {
+    null;
+}
+function isNothing(toCheck) {
+    if(isNull(toCheck()),
+        trueWrapped,
+        falseWrapped);
+}
+
+function LinkedList() {
+    function Node(val, next) {
+        this.val = val;
+        this.next = next;
+        function result() {
+            super.super;
+        }
+    }
+
+    super.head = null;
+
+    super.size = 0;
+    function size() {
+        super.size;
+    }
+    function add(elm) {
+        function recurse(current) {
+            function execute() {
+                current.next = if (isNull(current.next),
+                    Node(elm, null),
+                    recurse(current.next)
+                );
+                current;
+            }
+        }
+        super.super.super.head = if (isNull(head),
+            Node(elm, null),
+            recurse(head)
+        );
+        super.super.super.size = sub(super.super.super.size, -1);
+        null;
+    }
+    function print() {
+        super.current = head;
+        function run() {
+            globalThis.print(current.val.getNum());
+            super.super.super.current = current.next;
+        }
+        repeat(super.super.super.size, run);
+    }
+    this;
+}
+
+function Object(num) {
+    function getNum() {
+        super.num;
+    }
+    this;
+}
+
+let lst = LinkedList();
+
+function run() {
+    lst.add(Object(5));
+    null;
+}
+
+print("Start");
+input();
+
+garbageCollect();
+print("Garbage Collected");
+input();
+
+repeat(500, run);
+print("Allocated 500 Objects");
+input();
+
+lst.print();
+print("Printed 500 Objects's values");
+input();
+
+garbageCollect();
+print("Garbage Collected");
+input();
+
+lst.print();
+print("Printed 500 Objects's values");
+input();
+
+lst = null;
+run = null;
+print("Set to null");
+input();
+
+garbageCollect();
+print("Garbage Collected");
+input();
+
+5doesNotParse(){}

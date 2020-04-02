@@ -1,0 +1,25 @@
+function true(then, else) {
+	then();
+}
+function false(then, else) {
+	else();
+}
+function if(cond, then, else) {
+	cond(then, else);
+}
+function factorial(n) {
+    function baseCase() {
+        1;
+    }
+    function recursion() {
+        mult(n,factorial(sub(n, 1)));
+    }
+    if (isZero(n), baseCase, recursion);
+}
+let factorial5 = factorial(5);
+print(factorial5);
+factorial5 = 0;
+print(factorial5);
+printEnv();
+print(isZero(5));
+
