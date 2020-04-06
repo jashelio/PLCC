@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 public class ParserStorage implements Serializable {
     private Parser parserHead = TopDownParser.EMPTY;
-    private HashMap<Class<?>, Parser> classMap = new HashMap<>();
+    private final HashMap<Class<?>, Parser> classMap = new HashMap<>();
 
     public Parser getParser(Class<?> c) {
         return classMap.get(c);

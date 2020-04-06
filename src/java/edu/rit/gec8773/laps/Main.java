@@ -1,5 +1,6 @@
 package edu.rit.gec8773.laps;
 
+import edu.rit.gec8773.laps.parser.Parser;
 import edu.rit.gec8773.laps.parser.topDown.TopDownParser;
 import edu.rit.gec8773.laps.resources.Resources;
 import edu.rit.gec8773.laps.scanner.CustomScanner;
@@ -17,7 +18,7 @@ public class Main {
 	private static final Integer COMMAND_LINE_ARGS_FAIL = -5;
 	private static Resources r;
 	private static CustomScanner sc;
-	private static TopDownParser g;
+	private static Parser p;
 	private static BNFWriter bnfWriter = null;
 
 	/**
@@ -202,14 +203,14 @@ public class Main {
 			r = Resources.instance;
 			parseArgs(args);
 			saveIfSet();
-			g = r.getParserHead();
-			if (bnfWriter != null) {
-				bnfWriter.writeGrammar(g);
+			p = r.getParserHead();
+			if (bnfWriter != null && p instanceof BNFWriter.Writable) {
+				bnfWriter.writeGrammar((BNFWriter.Writable)p);
 				bnfWriter.close();
 			}
 			if (sc == null)
 				sc = new CustomScanner(System.in);
-			Object AST = g.parse(sc);
+			Object AST = p.parse(sc);
 			if (AST == null) {
 				System.out.print("\nCould not parse input: \"");
 				System.out.print(sc.getBufferString());

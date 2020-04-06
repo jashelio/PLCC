@@ -11,7 +11,7 @@ import java.util.Stack;
 public class SequentialParser extends TopDownParser {
 
 
-    private Stack<Integer> lastAcceptedRuleIndex = new Stack<>();
+    private final Stack<Integer> lastAcceptedRuleIndex = new Stack<>();
 
     /**
      *

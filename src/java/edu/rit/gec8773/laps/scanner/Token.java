@@ -15,17 +15,17 @@ public class Token implements Serializable, Type {
 	/**
 	 * The name string
 	 */
-	private String name;
+	private final String name;
 
 	/**
 	 * The compiled regular expression pattern
 	 */
-	private Pattern regex;
+	private final Pattern regex;
 
 	/**
 	 * The optional string value which matched the regular expression
 	 */
-	private String value;
+	private final String value;
 
 	/**
 	 * The main Class constructor checks all the arguments for appropriate

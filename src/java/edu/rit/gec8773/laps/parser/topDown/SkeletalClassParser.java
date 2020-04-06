@@ -26,7 +26,7 @@ public class SkeletalClassParser extends TopDownParser {
     private final String name;
     private final Class<?> cls;
     private final HashMap<List<Class<?>>, Parser> ruleMap;
-    private Stack<Parser> acceptedRulesStack = new Stack<>();
+    private final Stack<Parser> acceptedRulesStack = new Stack<>();
     // TODO make use of callstack instead
     private boolean ranOnce = false;
 
@@ -135,7 +135,7 @@ public class SkeletalClassParser extends TopDownParser {
                 emptyIndex = i;
                 continue;
             }
-            List<Class> types = Arrays.stream(rules)
+            List<Class<?>> types = Arrays.stream(rules)
                                       .map(Parameter::getType)
                                       .collect(Collectors.toList());
             Parser rule = ruleMap.get(types);

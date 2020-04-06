@@ -31,7 +31,8 @@ public class TokenCollector {
                 method -> method.invoke(null).toString());
     }
 
-    private static int pubStat = Modifier.PUBLIC | Modifier.STATIC;
+    @SuppressWarnings("FieldCanBeLocal")
+    private static final int pubStat = Modifier.PUBLIC | Modifier.STATIC;
 
     /**
      * Necessary to have a lambda expression throw exceptions

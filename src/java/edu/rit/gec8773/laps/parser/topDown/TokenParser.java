@@ -24,7 +24,7 @@ public class TokenParser extends TopDownParser {
         pattern = token.getRegex();
     }
 
-    private Stack<Token> tokStack = new Stack<>();
+    private final Stack<Token> tokStack = new Stack<>();
     // TODO make use of callstack instead
 
     @Override

@@ -11,10 +11,10 @@ import java.util.regex.Pattern;
 
 public class TokenStorage implements Serializable {
 
-    private HashSet<Token> tokens = new HashSet<>();
-    private HashSet<Pattern> skips = new HashSet<>();
-    private HashMap<Pattern, Token> patternMap = new HashMap<>();
-    private HashMap<String, Token> nameMap = new HashMap<>();
+    private final HashSet<Token> tokens = new HashSet<>();
+    private final HashSet<Pattern> skips = new HashSet<>();
+    private final HashMap<Pattern, Token> patternMap = new HashMap<>();
+    private final HashMap<String, Token> nameMap = new HashMap<>();
 
     public boolean hasToken(Token token) {
         return tokens.contains(token);

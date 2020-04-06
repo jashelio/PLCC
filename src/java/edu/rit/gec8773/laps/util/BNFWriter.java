@@ -19,7 +19,7 @@ public class BNFWriter implements AutoCloseable {
 	/**
 	 * A {@link PrintWriter} which writes to an appropriate destination
 	 */
-	private PrintWriter writer;
+	private final PrintWriter writer;
 
 	/**
 	 * Set to true if {@link System#out} is the {@link BNFWriter#writer}'s

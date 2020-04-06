@@ -37,16 +37,17 @@ public class Resources implements Serializable {
 			if (file.isDirectory())
 				throw new IOException("Can't write to file: " +
 						fileName + " is directory");
-		} else
-			file.createNewFile();
-		try (FileOutputStream fileOut = new FileOutputStream(file);
-			 ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
-			out.writeUnshared(instance);
-			out.flush();
-		}
+		} else if (file.createNewFile())
+			try (FileOutputStream fileOut = new FileOutputStream(file);
+				 ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
+				out.writeUnshared(instance);
+				out.flush();
+			}
+		else
+			throw new IOException("Can't create new file \"" + fileName + "\"");
 	}
 
-	private static DateFormat formatter = DateFormat.getDateTimeInstance(SHORT, LONG, Locale.getDefault(FORMAT));
+	private static final DateFormat formatter = DateFormat.getDateTimeInstance(SHORT, LONG, Locale.getDefault(FORMAT));
 	public static void save() throws IOException {
 		String filename = formatter.format(new Date())
 				.replaceAll("[/, ]", "-")
@@ -60,7 +61,7 @@ public class Resources implements Serializable {
 		if (!dir.exists() || !dir.isDirectory())
 			throw new IOException(dir.getAbsolutePath() + " does " +
 					"not exist as a directory");
-		Date newest = null;
+		Date newest;
 		int newestIndex = -1;
 		newest = new Date(0);
 		File[] files = Objects.requireNonNull(dir.listFiles());
@@ -83,7 +84,7 @@ public class Resources implements Serializable {
 					newest = date;
 					newestIndex = i;
 				}
-			} catch (ParseException e) { }
+			} catch (ParseException ignored) { }
 		if (newestIndex == -1)
 			throw new IOException("No language file (" + FILE_EXTENSION +
 					") found  in " + dir.getAbsolutePath());

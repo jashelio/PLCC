@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
  * @see Matcher
  */
 public class CustomScanner implements Scanner {
-	private LineNumberReader lineReader;
-	private StringBuffer buffer;
+	private final LineNumberReader lineReader;
+	private final StringBuffer buffer;
 
 	/**
 	 * Class constructor which uses an {@link InputStream} as input
