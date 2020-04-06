@@ -1,4 +1,4 @@
-package edu.rit.gec8773.laps;
+package edu.rit.gec8773.laps.util;
 
 import java.lang.reflect.InvocationTargetException;
 

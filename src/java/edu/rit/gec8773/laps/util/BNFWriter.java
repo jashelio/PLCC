@@ -1,4 +1,6 @@
-package edu.rit.gec8773.laps;
+package edu.rit.gec8773.laps.util;
+
+import edu.rit.gec8773.laps.parser.topDown.TopDownParser;
 
 import java.io.PrintWriter;
 import java.io.PrintStream;
@@ -8,10 +10,15 @@ import java.io.IOException;
 import java.util.Objects;
 
 /**
- * A {@link BNFWriter} is used to print {@link Parser}s recursively in a
+ * A {@link BNFWriter} is used to print {@link TopDownParser}s recursively in a
  * Backus–Naur form (BNF) style grammar definition
  */
 public class BNFWriter implements AutoCloseable {
+
+	public interface Writable extends Iterable<Writable> {
+		String getName();
+		boolean hasChildren();
+	}
 
 	/**
 	 * A {@link PrintWriter} which writes to an appropriate destination
@@ -75,7 +82,7 @@ public class BNFWriter implements AutoCloseable {
 	 *
 	 * @param parser the head of the parsing graph
 	 */
-	public void writeGrammar(Parser parser) {
+	public void writeGrammar(Writable parser) {
 		if (parser == null)
 			return;
 		String name = parser.getName();
@@ -87,7 +94,7 @@ public class BNFWriter implements AutoCloseable {
 		}
 		StringBuilder sb = new StringBuilder();
 		sb.append(name)
-		  .append(parser.isList() ? " **= " : " ::= ")
+		  .append(" ::= ")
 		  .append(ruleString);
 		writer.println(sb.toString());
 		parser.forEach(this::writeGrammar);

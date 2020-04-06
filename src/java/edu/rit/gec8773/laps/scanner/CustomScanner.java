@@ -1,4 +1,4 @@
-package edu.rit.gec8773.laps;
+package edu.rit.gec8773.laps.scanner;
 
 import edu.rit.gec8773.laps.resources.Resources;
 
@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
  * An implementation of a {@link Scanner} using {@link LineNumberReader} and
  * {@link Matcher} to handle regular expression matching
  *
- * @see edu.rit.gec8773.laps.Scanner
+ * @see Scanner
  * @see LineNumberReader
  * @see Matcher
  */

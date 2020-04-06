@@ -1,7 +1,7 @@
-package edu.rit.gec8773.laps;
+package edu.rit.gec8773.laps.util;
 
-import edu.rit.gec8773.laps.annotation.AnnotationUtils;
 import edu.rit.gec8773.laps.resources.Resources;
+import edu.rit.gec8773.laps.scanner.Token;
 
 import java.lang.reflect.*;
 import java.util.function.Function;

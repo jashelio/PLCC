@@ -1,4 +1,4 @@
-package edu.rit.gec8773.laps;
+package edu.rit.gec8773.laps.scanner;
 
 import edu.rit.gec8773.laps.resources.Resources;
 

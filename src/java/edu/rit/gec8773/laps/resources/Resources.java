@@ -1,7 +1,7 @@
 package edu.rit.gec8773.laps.resources;
 
-import edu.rit.gec8773.laps.Parser;
-import edu.rit.gec8773.laps.Token;
+import edu.rit.gec8773.laps.parser.Parser;
+import edu.rit.gec8773.laps.scanner.Token;
 
 import java.io.*;
 import java.text.DateFormat;

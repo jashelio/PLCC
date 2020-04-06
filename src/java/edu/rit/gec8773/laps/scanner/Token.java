@@ -1,4 +1,4 @@
-package edu.rit.gec8773.laps;
+package edu.rit.gec8773.laps.scanner;
 
 import java.util.Objects;
 import java.util.regex.Pattern;

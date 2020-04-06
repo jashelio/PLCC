@@ -1,6 +1,8 @@
-package edu.rit.gec8773.laps.annotation;
+package edu.rit.gec8773.laps.util;
 
-import edu.rit.gec8773.laps.MyConsumer;
+import edu.rit.gec8773.laps.annotation.GrammarRule;
+import edu.rit.gec8773.laps.annotation.Priority;
+import edu.rit.gec8773.laps.annotation.Token;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
@@ -26,7 +28,7 @@ public class AnnotationUtils {
 
 	/**
 	 * Checks if a given {@link AnnotatedElement} is a
-	 * {@link edu.rit.gec8773.laps.Token}
+	 * {@link edu.rit.gec8773.laps.scanner.Token}
 	 *
 	 * @param element the {@link AnnotatedElement} to check
 	 * @return true if the {@link AnnotatedElement} is a token
@@ -37,7 +39,7 @@ public class AnnotationUtils {
 
 	/**
 	 * Checks if a given {@link AnnotatedElement} is a skip
-	 * {@link edu.rit.gec8773.laps.Token}
+	 * {@link edu.rit.gec8773.laps.scanner.Token}
 	 *
 	 * @param element the {@link AnnotatedElement} to check
 	 * @return true if the {@link AnnotatedElement} is a skip token

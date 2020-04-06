@@ -1,6 +1,6 @@
 package edu.rit.gec8773.laps.resources;
 
-import edu.rit.gec8773.laps.Token;
+import edu.rit.gec8773.laps.scanner.Token;
 
 import java.io.Serializable;
 import java.util.HashMap;

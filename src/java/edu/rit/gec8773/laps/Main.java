@@ -1,6 +1,9 @@
 package edu.rit.gec8773.laps;
 
+import edu.rit.gec8773.laps.parser.topDown.TopDownParser;
 import edu.rit.gec8773.laps.resources.Resources;
+import edu.rit.gec8773.laps.scanner.CustomScanner;
+import edu.rit.gec8773.laps.util.BNFWriter;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -14,7 +17,7 @@ public class Main {
 	private static final Integer COMMAND_LINE_ARGS_FAIL = -5;
 	private static Resources r;
 	private static CustomScanner sc;
-	private static Parser g;
+	private static TopDownParser g;
 	private static BNFWriter bnfWriter = null;
 
 	/**
@@ -69,7 +72,7 @@ public class Main {
 				return COMMAND_LINE_ARGS_FAIL;
 			}
 			ClassLoader loader = Thread.currentThread().getContextClassLoader();
-			r.setParserHead(Parser.grammarRule(
+			r.setParserHead(TopDownParser.grammarRule(
 				loader.loadClass(args[++i])));
 			return i;
 		});
@@ -191,7 +194,7 @@ public class Main {
 	 * @param args the commandline arguments
 	 * @see Main#usage()
 	 * @throws Throwable when there is an uncaught exception in user code
-	 * @see Parser
+	 * @see TopDownParser
 	 */
 	public static void main(String[] args) throws Throwable {
 		int result = 0;
