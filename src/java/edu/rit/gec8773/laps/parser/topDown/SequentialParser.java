@@ -5,6 +5,7 @@ import edu.rit.gec8773.laps.scanner.Scanner;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
 import java.util.Stack;
 
 public class SequentialParser extends TopDownParser {
@@ -48,6 +49,11 @@ public class SequentialParser extends TopDownParser {
             return;
         for (--i; i >= 0; --i)
             parsingRules.get(i).returnTokens(sc);
+    }
+
+    @Override
+    public Type getStartingToken() {
+        return parsingRules.get(0).getStartingToken();
     }
 
     @Override

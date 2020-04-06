@@ -5,6 +5,7 @@ import edu.rit.gec8773.laps.resources.Resources;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
 
 public class SkeletalClassParserReference extends TopDownParser {
 
@@ -28,6 +29,11 @@ public class SkeletalClassParserReference extends TopDownParser {
     @Override
     public void returnTokens(Scanner sc) {
         Resources.instance.getParser(cls).returnTokens(sc);
+    }
+
+    @Override
+    public Type getStartingToken() {
+        return cls;
     }
 
     @Override

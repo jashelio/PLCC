@@ -1,10 +1,6 @@
 package edu.rit.gec8773.laps.annotation;
 
-//Creating annotation
 import java.lang.annotation.*;
-import java.lang.reflect.*;
-
-import java.util.function.Function;
 
 /**
  * Indicates that the annotated field or method is a token. This target must be

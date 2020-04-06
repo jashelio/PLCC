@@ -1,15 +1,16 @@
 package edu.rit.gec8773.laps.scanner;
 
+import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.util.Objects;
 import java.util.regex.Pattern;
-import java.io.Serializable;
 
 /**
  * Stores the name of a token, the regular expression associated with
  * that name, and, optionally, a value matched to
  * the regular expression
  */
-public class Token implements Serializable {
+public class Token implements Serializable, Type {
 
 	/**
 	 * The name string
@@ -111,6 +112,11 @@ public class Token implements Serializable {
 		return value;
 	}
 
+	@Override
+	public String getTypeName() {
+		return "token <" + name + ">";
+	}
+
 	// Comparisons only based on name and regex pattern
 
 	/**
@@ -130,6 +136,8 @@ public class Token implements Serializable {
 	 */
 	@Override
 	public boolean equals(Object o) {
+		if (o == null)
+			return false;
 		if (!(o instanceof Token))
 			return false;
 		Token t = (Token) o;

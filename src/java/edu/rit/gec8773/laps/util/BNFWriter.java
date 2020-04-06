@@ -2,11 +2,7 @@ package edu.rit.gec8773.laps.util;
 
 import edu.rit.gec8773.laps.parser.topDown.TopDownParser;
 
-import java.io.PrintWriter;
-import java.io.PrintStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.util.Objects;
 
 /**

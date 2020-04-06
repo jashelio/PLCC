@@ -8,16 +8,11 @@ import edu.rit.gec8773.laps.scanner.Token;
 import edu.rit.gec8773.laps.util.BNFWriter;
 import edu.rit.gec8773.laps.util.TokenCollector;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 /**
  * {@link TopDownParser} builds parsing graphs (allowing cycles) of type
@@ -30,10 +25,10 @@ public abstract class TopDownParser implements Parser, BNFWriter.Writable {
 	/**
 	 * A parser which accepts the empty string
 	 */
-	public static final TopDownParser EMPTY;
+	public static final Parser EMPTY;
 
 	static {
-		TopDownParser temp;
+		Parser temp;
 		try {
 			temp = TopDownParser.seq();
 		} catch (InvocationTargetException e) {
@@ -49,7 +44,7 @@ public abstract class TopDownParser implements Parser, BNFWriter.Writable {
 	 * A list of potential rules include:
 	 * 	<ul>
 	 * 	 <li>{@link Parameter} describing a token or another grammar class</li>
-	 * 	 <li>{@link TopDownParser} containing a constructed parser</li>
+	 * 	 <li>{@link Parser} containing a constructed parser</li>
 	 * 	 <li>{@link Token}</li>
 	 * 	 <li>{@link Class} representing another grammar rule</li>
 	 * 	</ul>
@@ -134,7 +129,7 @@ public abstract class TopDownParser implements Parser, BNFWriter.Writable {
 	 * @return the parser
 	 * @throws InvocationTargetException when the user causes an exception
 	 */
-	private static TopDownParser seq(Object... rules)
+	static Parser seq(Object... rules)
 			throws InvocationTargetException {
 		return new SequentialParser(rules);
 	}
@@ -159,8 +154,7 @@ public abstract class TopDownParser implements Parser, BNFWriter.Writable {
 	 * @return the parser constructed
 	 * @throws InvocationTargetException when the user causes an exception
 	 */
-	public static Parser grammarRule(Class<?> cls)
-			throws InvocationTargetException {
+	public static Parser grammarRule(Class<?> cls) throws InvocationTargetException {
 		if (Resources.instance.hasParser(cls))
 			return Resources.instance.getParser(cls);
 		boolean isHead = processing.size() == 0;
@@ -171,50 +165,7 @@ public abstract class TopDownParser implements Parser, BNFWriter.Writable {
 
 		if (processing.add(cls)) {
 			TokenCollector.collect(cls);
-			HashMap<List<Class>, Parser> ruleMap = new HashMap();
-			for (Constructor<?> ctr : cls.getConstructors()) {
-				Parameter[] rules = ctr.getParameters();
-				if (rules.length == 0) {
-					if (isHead)
-						throw new InvocationTargetException(
-								new Exception((cls + " cannot accept an empty" +
-										" grammar rule since it's the top of " +
-										"the context free grammar")));
-					ruleMap.put(List.of(), EMPTY);
-					continue;
-				}
-				TopDownParser seqRule = TopDownParser.seq((Object[])rules);
-				// TODO add a better check for rules starting with same token
-//				for (TopDownParser rule : ruleMap.values()) // TODO make TopDownParser.equals()
-//					if (!(rule == EMPTY || seqRule == EMPTY) &&
-//							rule.parsingRules
-//								.get(0)
-//								.toString()
-//								.equals(
-//									seqRule.parsingRules
-//										   .get(0)
-//										   .toString()
-//							))
-//						throw new InvocationTargetException(
-//						new Exception(("Two or more grammar" +
-//								" rules have the same" +
-//								" starting rule in " + cls +
-//								"\n    Found: " + rule.parsingRules
-//								.get(0).toString() + " and " +
-//								seqRule.parsingRules
-//										.get(0)
-//										.toString())));
-				List<Class> types = Arrays.stream(rules)
-									  .map(Parameter::getType)
-									  .collect(Collectors.toList());
-				ruleMap.put(types, seqRule);
-			}
-			if (ruleMap.size() == 0)
-				throw new InvocationTargetException(
-						new Exception((cls + " has no accessible grammar " +
-								"rules make sure at least one constructor " +
-								"is public")));
-			Parser result = new SkeletalClassParser(cls, ruleMap);
+			Parser result = new SkeletalClassParser(cls, isHead);
 			if (isHead)
 				processing.clear();
 			Resources.instance.addParser(cls, result);

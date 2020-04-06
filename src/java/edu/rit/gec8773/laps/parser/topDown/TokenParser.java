@@ -56,6 +56,11 @@ public class TokenParser extends TopDownParser {
     }
 
     @Override
+    public Token getStartingToken() {
+        return Resources.instance.getToken(pattern);
+    }
+
+    @Override
     public String toString() {
         return name;
     }

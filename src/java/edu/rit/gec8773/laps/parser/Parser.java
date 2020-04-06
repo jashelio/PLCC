@@ -8,6 +8,7 @@ import edu.rit.gec8773.laps.annotation.RunBeforeFirstInit;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
 
 public interface Parser extends Serializable {
 
@@ -33,4 +34,6 @@ public interface Parser extends Serializable {
      * @param sc the {@link Scanner} to return to
      */
     void returnTokens(Scanner sc);
+
+    Type getStartingToken();
 }

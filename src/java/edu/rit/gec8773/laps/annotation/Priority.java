@@ -1,9 +1,6 @@
 package edu.rit.gec8773.laps.annotation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 import java.util.Comparator;
 import java.util.function.ToIntFunction;
 

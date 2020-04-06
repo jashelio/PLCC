@@ -15,7 +15,9 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Parameter;
+import java.lang.reflect.Type;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -23,23 +25,82 @@ public class SkeletalClassParser extends TopDownParser {
 
     private final String name;
     private final Class<?> cls;
-    private final HashMap<List<Class>, Parser> ruleMap;
+    private final HashMap<List<Class<?>>, Parser> ruleMap;
     private Stack<Parser> acceptedRulesStack = new Stack<>();
     // TODO make use of callstack instead
     private boolean ranOnce = false;
+
+    private static HashMap<List<Class<?>>, Parser> constructRuleMap(Class<?> cls, boolean isHead) throws InvocationTargetException {
+        HashMap<List<Class<?>>, Parser> ruleMap = new HashMap<>();
+        Map<Parser, Integer> priorityMap = new HashMap<>();
+        Constructor<?>[] ctrs = cls.getConstructors();
+        for (Constructor<?> ctr : ctrs) {
+            Parameter[] rules = ctr.getParameters();
+            if (rules.length == 0) {
+                if (isHead)
+                    throw new InvocationTargetException(
+                            new Exception((cls + " cannot accept an empty" +
+                                    " grammar rule since it's the top of " +
+                                    "the context free grammar")));
+                ruleMap.put(List.of(), EMPTY);
+                continue;
+            }
+            Parser seqRule = TopDownParser.seq((Object[])rules);
+            Type firstTypeSeq = seqRule.getStartingToken();
+            int priority = AnnotationUtils.priority(ctr);
+            for (Parser parser : ruleMap.values()) {
+                if (parser == EMPTY)
+                    continue;
+                Type firstTypeTest = parser.getStartingToken();
+                if (firstTypeSeq.equals(firstTypeTest) && priorityMap.get(parser) == priority) {
+                    String otherCtrString = "non-existent constructor";
+                    try {
+                        otherCtrString = cls.getConstructor(
+                            (Class<?>[]) (ruleMap.entrySet()
+                                                 .parallelStream()
+                                                 .filter(Predicate.isEqual(parser))
+                                                 .findFirst()
+                                                 .orElseThrow(NoSuchMethodException::new)
+                                                 .getKey()
+                                                 .parallelStream()
+                                                 .map(Class.class::cast)
+                                                 .toArray()))
+                                            .toString();
+                    } catch (NoSuchMethodException ignored) {}
+                    throw new InvocationTargetException(new Exception(("Two " +
+                            "or more grammar rule constructors have the same " +
+                            "starting type in " + cls + "\n" +
+                            "    Clashing Constructors: " + ctr + "and " +
+                            otherCtrString
+                    )));
+                }
+            }
+            List<Class<?>> types = Arrays.stream(rules)
+                                      .map(Parameter::getType)
+                                      .collect(Collectors.toList());
+            ruleMap.put(types, seqRule);
+            priorityMap.put(seqRule, priority);
+        }
+        if (ruleMap.size() == 0)
+            throw new InvocationTargetException(
+                    new Exception((cls + " has no accessible grammar " +
+                            "rules make sure at least one constructor " +
+                            "is public")));
+        return ruleMap;
+    }
 
     /**
      *
      * {@inheritDoc}
      *
      */
-    SkeletalClassParser(Class<?> cls, HashMap<List<Class>, Parser> ruleMap) throws InvocationTargetException {
-        super(ruleMap.values().toArray());
+    SkeletalClassParser(Class<?> cls, boolean isHead) throws InvocationTargetException {
+        super(SkeletalClassParser.constructRuleMap(cls, isHead).values().toArray());
         StringBuilder sb = new StringBuilder(cls.getSimpleName());
         sb.insert(0, "<")
                 .append(">");
         name = sb.toString();
-        this.ruleMap = ruleMap;
+        this.ruleMap = SkeletalClassParser.constructRuleMap(cls, isHead);
         this.cls = cls;
     }
 
@@ -75,8 +136,8 @@ public class SkeletalClassParser extends TopDownParser {
                 continue;
             }
             List<Class> types = Arrays.stream(rules)
-                    .map(parameter -> (Class)parameter.getType())
-                    .collect(Collectors.toList());
+                                      .map(Parameter::getType)
+                                      .collect(Collectors.toList());
             Parser rule = ruleMap.get(types);
             Object[] parsed = (Object[])rule.parse(sc);
             if (parsed == null) {
@@ -85,9 +146,11 @@ public class SkeletalClassParser extends TopDownParser {
             }
             acceptedRulesStack.push(rule);
             parsed = Stream.of(parsed)
-                    .map( elm -> elm instanceof Token
-                            ? ((Token)elm).getValue() : elm )
-                    .toArray();
+                           .map( elm ->
+                                   elm instanceof Token ?
+                                        ((Token)elm).getValue() :
+                                        elm )
+                           .toArray();
             Object AST = null;
             try {
                 if (Resources.instance.debugEnabled())
@@ -111,8 +174,7 @@ public class SkeletalClassParser extends TopDownParser {
             return AST;
         }
         if (Resources.instance.debugEnabled())
-            System.out.println("Failed to accept " + name +
-                    " rule");
+            System.out.println("Failed to accept " + name + " rule");
         return null;
     }
 
@@ -124,6 +186,11 @@ public class SkeletalClassParser extends TopDownParser {
         if (rule == null)
             return;
         rule.returnTokens(sc);
+    }
+
+    @Override
+    public Type getStartingToken() {
+        return cls;
     }
 
     @Override
