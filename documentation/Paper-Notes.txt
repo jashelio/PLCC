@@ -1,0 +1,17 @@
+- Formal documentation
+- include high level design
+- top down parser doesn't build AST, but it allows for anyone to easily build it
+- not compiling (another word) and serializing, maybe build, imaging
+- trying to make the setup process as simple as possible
+
+Try to include:
+  Motivation
+  Goals
+  Example language
+  Design
+    Structural design (parts seperately)
+    Tutorial language writing process (how the parts work together)
+  Difficulties [annotations aren't passed by name]
+  Results: Goals Met?
+  Future work
+
