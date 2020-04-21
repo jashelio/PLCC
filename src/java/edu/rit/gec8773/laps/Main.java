@@ -211,6 +211,7 @@ public class Main {
 			if (sc == null)
 				sc = new CustomScanner(System.in);
 			Object AST = p.parse(sc);
+			sc.skip();
 			if (AST == null) {
 				System.out.print("\nCould not parse input: \"");
 				System.out.print(sc.getBufferString());
